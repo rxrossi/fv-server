@@ -1,6 +1,7 @@
 import Hapi from 'hapi';
-import mongoose from 'mongoose';
 import ClientsRoutes from './routes/clients';
+import Client from './models/Clients';
+import mongoose from 'mongoose';
 
 export default () => {
   let server = new Hapi.Server();
@@ -12,37 +13,30 @@ export default () => {
 
   mongoose.Promise = global.Promise;
 
-  // MODEL
+  // Client.deleteMany({}, (err) => {
+  //   if (err) {
+  //     console.log(err)
+  //   } else {
+  //     console.log('deleted everything');
+  //   }
+  // });
 
-  const Client = mongoose.model('Client', mongoose.Schema({
-    name: { type: String, unique: true },
-    phone: String,
-  }));
+  // const mary = new Client({
+  //   name: 'Mary',
+  //   phone: '998',
+  // });
 
-  Client.deleteMany({}, (err) => {
-    if (err) {
-      console.log(err)
-    } else {
-      console.log('deleted everything');
-    }
-  });
+  // mary.save((err, clientSaved) => {
+  //   if (err) {
+  //     console.log(err);
+  //   } else {
+  //     console.log('saved', clientSaved);
+  //   }
+  // });
 
-  const mary = new Client({
-    name: 'John',
-    phone: '998',
-  });
-
-  mary.save((err, clientSaved) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('saved', clientSaved);
-    }
-  });
-
-  Client.find((err, clients) => {
-    console.log(clients);
-  })
+  // Client.find((err, clients) => {
+  //   console.log(clients);
+  // })
 
   // MODEL.end
 
