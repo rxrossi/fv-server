@@ -65,14 +65,15 @@ describe('Clients Route', () => {
       };
 
       await fetch(CLIENTS_URL, {
-        body: JSON.stringify(john),
         method: 'POST',
+        body: JSON.stringify(john),
       }).then(res => res.json());
 
       const afterList = await Client.find((err, clients) => {
         return clients;
       });
       expect(afterList.length).toBe(1);
+      expect(afterList[0].name).toEqual(john.name);
     })
   })
 });

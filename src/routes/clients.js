@@ -15,8 +15,8 @@ export default (server) => {
   });
 
   server.route({
-    method: 'POST',
     path: '/clients',
+    method: 'POST',
     handler: (req, res) => {
       const client = new Client(req.payload);
       client.save();

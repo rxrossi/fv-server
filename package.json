@@ -6,7 +6,7 @@
   "scripts": {
     "start": "babel-node src/index.js",
     "test:unit": "jest",
-    "test:integration": "jest src/__tests__/**/*.js"
+    "test:integration": "jest src/__tests__/**/*.js --watchAll"
   },
   "babel": {
     "presets": [
