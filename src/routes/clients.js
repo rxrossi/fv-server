@@ -26,7 +26,7 @@ export default (server) => {
     method: 'POST',
     handler: async (req, res) => {
       const { name, phone } = req.payload;
-      const errors = [];
+      const errors = {};
 
       // Check if name is duplicated
       const notUniqueName = await Client.findOne({ name }, (err, client) => {
@@ -37,10 +37,10 @@ export default (server) => {
       });
 
       if (notUniqueName) {
-        errors.push({ name: NOT_UNIQUE })
+        errors.name = NOT_UNIQUE;
       }
 
-      if (!errors.length) {
+      if (!Object.keys(errors).length) {
         const client = new Client(req.payload);
         client.save();
         return res({

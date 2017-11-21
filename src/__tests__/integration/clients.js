@@ -121,9 +121,9 @@ describe('Clients Route', () => {
       // }
       expect(res2).toEqual({
         code: 409,
-        errors: [
-          { name: NOT_UNIQUE },
-        ],
+        errors: {
+          name: NOT_UNIQUE,
+        },
       });
 
     });
