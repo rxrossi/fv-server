@@ -31,7 +31,10 @@ describe('Clients Route', () => {
       const answer = await fetch(CLIENTS_URL)
         .then(res => res.json())
 
-      expect(answer).toEqual([]);
+      expect(answer).toEqual({
+        code: 200,
+        body: []
+      });
     });
 
     it('receives a list of clients', async () => {
@@ -49,8 +52,9 @@ describe('Clients Route', () => {
       const answer = await fetch(CLIENTS_URL)
         .then(res => res.json());
 
-      expect(answer.length).toEqual(2);
-      expect(answer[0].name).toEqual(clientsList[0].name);
+      expect(answer.code).toEqual(200);
+      expect(answer.body.length).toEqual(2);
+      expect(answer.body[0].name).toEqual(clientsList[0].name);
     });
   });
 

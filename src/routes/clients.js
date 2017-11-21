@@ -8,9 +8,15 @@ export default (server) => {
     handler: async (req, res) => {
       await Client.find((err, clients) => {
         if (err) {
-          return res('');
+          return res({
+            code: 500,
+            error: 'Could not fetch clients',
+          });
         }
-        return res(clients);
+        return res({
+          code: 200,
+          body: clients
+        });
       })
     }
   });
