@@ -1,5 +1,5 @@
 import Client from '../models/Clients';
-import { NOT_UNIQUE } from '../errors';
+import { NOT_UNIQUE, BLANK } from '../errors';
 
 export default (server) => {
     server.route({
@@ -28,6 +28,14 @@ export default (server) => {
       const { name, phone } = req.payload;
       const errors = {};
 
+      if (!name.length) {
+        errors.name = BLANK
+      }
+
+      if (!phone.length) {
+        errors.name = BLANK
+      }
+
       // Check if name is duplicated
       const notUniqueName = await Client.findOne({ name }, (err, client) => {
         if (err) {
@@ -50,7 +58,7 @@ export default (server) => {
       }
 
       return res({
-        code: 409, // 409 is conflict
+        code: 422, // 409 is conflict
         errors
       });
     }

@@ -28,6 +28,14 @@ export default (server) => {
       const { name, phone } = req.payload;
       const errors = {};
 
+      if (!name.length) {
+        errors.name = BLANK
+      }
+
+      if (!measure_unit.length) {
+        errors.measure_unit = BLANK
+      }
+
       // Check if name is duplicated
       const notUniqueName = await Product.findOne({ name }, (err, product) => {
         if (err) {
