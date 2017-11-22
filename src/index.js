@@ -1,10 +1,10 @@
 import Hapi from 'hapi';
+import ProductsRoutes from './routes/products';
 import ClientsRoutes from './routes/clients';
-import Client from './models/Clients';
 import mongoose from 'mongoose';
 import corsHeaders from 'hapi-cors-headers';
 
-const configureServer = () => {
+const configureServer = async () => {
   let server = new Hapi.Server();
 
   server.connection({
@@ -17,6 +17,7 @@ const configureServer = () => {
   mongoose.Promise = global.Promise;
 
   ClientsRoutes(server);
+  ProductsRoutes(server);
 
   mongoose.Promise = global.Promise;
   return mongoose.connect('mongodb://localhost/fv', { useMongoClient: true })

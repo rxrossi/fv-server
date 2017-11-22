@@ -22,8 +22,8 @@ describe('Clients Route', () => {
     })
   });
 
-  afterEach(() => {
-    server.stop();
+  afterEach((done) => {
+    server.stop(done);
   });
 
   describe('GET Route', () => {

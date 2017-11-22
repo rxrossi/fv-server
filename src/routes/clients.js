@@ -2,24 +2,24 @@ import Client from '../models/Clients';
 import { NOT_UNIQUE } from '../errors';
 
 export default (server) => {
-  server.route({
-    method: 'GET',
-    path: '/clients',
-    handler: async (req, res) => {
-      await Client.find((err, clients) => {
-        if (err) {
+    server.route({
+      method: 'GET',
+      path: '/clients',
+      handler: async (req, res) => {
+        await Client.find((err, clients) => {
+          if (err) {
+            return res({
+              code: 500,
+              error: 'Could not fetch clients',
+            });
+          }
           return res({
-            code: 500,
-            error: 'Could not fetch clients',
+            code: 200,
+            body: clients
           });
-        }
-        return res({
-          code: 200,
-          body: clients
-        });
-      })
-    }
-  });
+        })
+      }
+    });
 
   server.route({
     path: '/clients',
