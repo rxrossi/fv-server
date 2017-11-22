@@ -58,7 +58,7 @@ export default (server) => {
       }
 
       return res({
-        code: 409, // 409 is conflict
+        code: 422, // 409 is conflict
         errors
       });
     }
