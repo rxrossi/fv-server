@@ -121,7 +121,7 @@ describe('Products Route', () => {
       //  body,
       // }
       expect(res2).toEqual({
-        code: 409,
+        code: 422,
         errors: {
           name: NOT_UNIQUE,
         },

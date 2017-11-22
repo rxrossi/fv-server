@@ -1,5 +1,5 @@
 import Product from '../models/Products';
-import { NOT_UNIQUE } from '../errors';
+import { NOT_UNIQUE, BLANK } from '../errors';
 
 export default (server) => {
   server.route({
@@ -25,18 +25,18 @@ export default (server) => {
     path: '/products',
     method: 'POST',
     handler: async (req, res) => {
-      const { name, phone } = req.payload;
+      const { name, measure_unit } = req.payload;
       const errors = {};
 
-      if (!name.length) {
-        errors.name = BLANK
+      if (!measure_unit) {
+        errors.measure_unit = BLANK;
       }
 
-      if (!measure_unit.length) {
-        errors.measure_unit = BLANK
+      if (!name) {
+        errors.name = BLANK;
       }
 
-      // Check if name is duplicated
+      //Check if name is duplicated
       const notUniqueName = await Product.findOne({ name }, (err, product) => {
         if (err) {
           return console.error('error when finding a product with this name');
