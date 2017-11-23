@@ -1,5 +1,5 @@
 import Product from '../models/Products';
-import { NOT_UNIQUE, BLANK } from '../errors';
+import { NOT_UNIQUE, BLANK, INVALID } from '../errors';
 
 export default (server) => {
   server.route({
@@ -28,6 +28,14 @@ export default (server) => {
       const { name, measure_unit } = req.payload;
       const errors = {};
 
+      const validMeasureUnits = [
+        "ml", "unit", "mg"
+      ];
+
+      if (!validMeasureUnits.includes(measure_unit)) {
+        errors.measure_unit = INVALID;
+      }
+
       if (!measure_unit) {
         errors.measure_unit = BLANK;
       }
@@ -37,16 +45,14 @@ export default (server) => {
       }
 
       //Check if name is duplicated
-      const notUniqueName = await Product.findOne({ name }, (err, product) => {
+      await Product.findOne({ name }, (err, product) => {
         if (err) {
           return console.error('error when finding a product with this name');
         }
-        return product;
+        if (product) {
+          errors.name = NOT_UNIQUE;
+        }
       });
-
-      if (notUniqueName) {
-        errors.name = NOT_UNIQUE;
-      }
 
       if (!Object.keys(errors).length) {
         const product = new Product(req.payload);

@@ -37,16 +37,15 @@ export default (server) => {
       }
 
       // Check if name is duplicated
-      const notUniqueName = await Client.findOne({ name }, (err, client) => {
+      await Client.findOne({ name }, (err, client) => {
         if (err) {
           return console.error('error when finding a client with this name');
         }
-        return client;
+        if (client) {
+          errors.name = NOT_UNIQUE;
+        }
       });
 
-      if (notUniqueName) {
-        errors.name = NOT_UNIQUE;
-      }
 
       if (!Object.keys(errors).length) {
         const client = new Client(req.payload);

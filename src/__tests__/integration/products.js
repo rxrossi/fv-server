@@ -94,7 +94,7 @@ describe('Products Route', () => {
 
       const productExample = {
         name: 'OX',
-        measure_unit: '999',
+        measure_unit: 'unit',
       };
 
       const res1 = await fetch(PRODUCTS_URL, {
