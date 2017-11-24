@@ -1,43 +1,39 @@
-import Client from '../models/Clients';
+import Professional from '../models/Professionals';
 import { NOT_UNIQUE, BLANK } from '../errors';
 
 export default (server) => {
     server.route({
       method: 'GET',
-      path: '/clients',
+      path: '/professionals',
       handler: async (req, res) => {
-        await Client.find((err, clients) => {
+        await Professional.find((err, professionals) => {
           if (err) {
             return res({
               code: 500,
-              error: 'Could not fetch clients',
+              error: 'Could not fetch professionals',
             });
           }
           return res({
             code: 200,
-            body: clients
+            body: professionals
           });
         })
       }
     });
 
   server.route({
-    path: '/clients',
+    path: '/professionals',
     method: 'POST',
     handler: async (req, res) => {
       const { name, phone } = req.payload;
       const errors = {};
 
-      if (!phone) {
-        errors.phone = BLANK;
-      }
-
       // Check if name is duplicated
-      await Client.findOne({ "name":  { $regex : new RegExp(name, "i") } }, (err, client) => {
+      await Professional.findOne({ "name":  { $regex : new RegExp(name, "i") } }, (err, professional) => {
         if (err) {
-          return console.error('error when finding a client with this name');
+          return console.error('error when finding a professional with this name');
         }
-        if (client) {
+        if (professional) {
           errors.name = NOT_UNIQUE;
         }
       });
@@ -47,11 +43,11 @@ export default (server) => {
       }
 
       if (!Object.keys(errors).length) {
-        const client = new Client(req.payload);
-        client.save();
+        const professional = new Professional(req.payload);
+        professional.save();
         return res({
           code: 201,
-          body: client,
+          body: professional,
         });
       }
 

@@ -40,12 +40,8 @@ export default (server) => {
         errors.measure_unit = BLANK;
       }
 
-      if (!name) {
-        errors.name = BLANK;
-      }
-
-      //Check if name is duplicated
-      await Product.findOne({ name }, (err, product) => {
+      // Check if name is duplicated
+      await Product.findOne({ "name": { $regex : new RegExp(name, "i") } }, (err, product) => {
         if (err) {
           return console.error('error when finding a product with this name');
         }
@@ -53,6 +49,10 @@ export default (server) => {
           errors.name = NOT_UNIQUE;
         }
       });
+
+      if (!name) {
+        errors.name = BLANK;
+      }
 
       if (!Object.keys(errors).length) {
         const product = new Product(req.payload);
@@ -69,4 +69,4 @@ export default (server) => {
       });
     }
   });
-}
+};
