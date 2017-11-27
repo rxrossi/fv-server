@@ -86,7 +86,7 @@ describe('Products Route', () => {
       expect(answer.body[0].avgPriceFiveLast).toEqual(expected[0].avgPriceFiveLast);
     });
 
-    it.only('sends a a list of products with valid stock when entries exist', async () => {
+    it('sends a a list of products with valid stock when entries exist', async () => {
       const entries = [
         {
           qty: -3,
