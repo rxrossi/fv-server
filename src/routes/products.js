@@ -1,5 +1,6 @@
 import Product from '../models/Products';
 import { NOT_UNIQUE, BLANK, INVALID } from '../errors';
+// import * as helpers from '../helpers/products';
 
 export default (server) => {
   server.route({
@@ -8,6 +9,7 @@ export default (server) => {
     handler: async (req, res) => {
       await Product.find((err, products) => {
         if (err) {
+          console.log("error on GET")
           return res({
             code: 500,
             error: 'Could not fetch products',

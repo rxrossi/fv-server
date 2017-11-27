@@ -37,11 +37,35 @@ describe('Products Route', () => {
       });
     });
 
-    it('receives a list of products', async () => {
+    it('receives a list of products where stock is a empty list, entries on it does not exist yet ', async () => {
       const productsList = [
-        { id: '1', name: 'OX', measure_unit: 'ml' },
-        { id: '2', name: 'Shampoo', measure_unit: 'ml' },
-        { id: '3', name: 'Capes', measure_unit: 'unit' },
+        { name: 'OX', measure_unit: 'ml' },
+        { name: 'Shampoo', measure_unit: 'ml' },
+        { name: 'Capes', measure_unit: 'unit' },
+      ];
+
+      const expected = [
+        {
+          ...productsList[0],
+          quantity: 0,
+          price: '',
+          avgPriceFiveLast: '',
+          stock: [],
+        },
+        {
+          ...productsList[1],
+          quantity: 0,
+          price: '',
+          avgPriceFiveLast: '',
+          stock: [],
+        },
+        {
+          ...productsList[2],
+          quantity: 0,
+          price: '',
+          avgPriceFiveLast: '',
+          stock: [],
+        },
       ];
 
       await Product.collection.insert(productsList, (err) => {
@@ -55,9 +79,68 @@ describe('Products Route', () => {
 
       expect(answer.code).toEqual(200);
       expect(answer.body.length).toEqual(3);
-      expect(answer.body[0].name).toEqual(productsList[0].name);
+      expect(answer.body[0].name).toEqual(expected[0].name);
+      expect(answer.body[0].measure_unit).toEqual(expected[0].measure_unit);
+      expect(answer.body[0].quantity).toEqual(expected[0].quantity);
+      expect(answer.body[0].price).toEqual(expected[0].price);
+      expect(answer.body[0].avgPriceFiveLast).toEqual(expected[0].avgPriceFiveLast);
     });
-  })
+
+    it.only('sends a a list of products with valid stock when entries exist', async () => {
+      const entries = [
+        {
+          qty: -3,
+          price: 1,
+          sourceOrDestination: 'Client X, to do Y',
+          date: '10 25 2017',
+        },
+        {
+          qty: 10,
+          price: 1,
+          sourceOrDestination: 'Company one',
+          date: '10 24 2017',
+        },
+      ];
+
+      const product = { name: 'OX', measure_unit: 'ml' };
+
+      await Product.collection.insert([product], (err) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+
+      const ox = await Product.findOne({ name: 'OX' })
+      ox.stock.push(entries[0])
+      ox.stock.push(entries[1])
+      console.log(ox.stock)
+      ox.save();
+
+      const answer = await fetch(PRODUCTS_URL)
+        .then(res => res.json());
+
+      // console.log(answer.body[0])
+      // console.log(answer.body[0].stock)
+
+      expect(answer.code).toEqual(200);
+      expect(answer.body.length).toEqual(1);
+      expect(answer.body[0].name).toEqual(product.name);
+
+      expect(answer.body[0].quantity).toEqual(7);
+      expect(answer.body[0].price).toEqual(1);
+      // expect(answer.body[0].avgPriceFiveLast).toEqual(1);
+
+      // expect(answer.body[0].stock[0].qty).toEqual(entries[0].qty);
+      // expect(answer.body[0].stock[0].price).toEqual(entries[0].price);
+      // expect(answer.body[0].stock[0].sourceOrDestination).toEqual(entries[0].sourceOrDestination);
+      // expect(answer.body[0].stock[0].date).toEqual(entries[0].date);
+
+      // expect(answer.body[0].stock[1].qty).toEqual(entries[1].qty);
+      // expect(answer.body[0].stock[1].price).toEqual(entries[1].price);
+      // expect(answer.body[0].stock[1].sourceOrDestination).toEqual(entries[1].sourceOrDestination);
+      // expect(answer.body[0].stock[1].date).toEqual(entries[1].date);
+    });
+  });
 
   describe('POST Route', () => {
     it('Can post a product', async () => {

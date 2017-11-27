@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "babel-node src/index.js",
-    "test:unit": "jest",
+    "test:unit": "jest src/**/*.test.js --watchAll",
     "test:integration": "jest src/__tests__/**/*.js --watchAll"
   },
   "babel": {
