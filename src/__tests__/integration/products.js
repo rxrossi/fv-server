@@ -113,14 +113,14 @@ describe('Products Route', () => {
       const ox = await Product.findOne({ name: 'OX' })
       ox.stock.push(entries[0])
       ox.stock.push(entries[1])
-      console.log(ox.stock)
+      // console.log(ox.stock)
       ox.save();
 
       const answer = await fetch(PRODUCTS_URL)
         .then(res => res.json());
 
-      // console.log(answer.body[0])
-      // console.log(answer.body[0].stock)
+      console.log(answer.body[0])
+      console.log(answer.body[0].stock)
 
       expect(answer.code).toEqual(200);
       expect(answer.body.length).toEqual(1);
@@ -128,17 +128,15 @@ describe('Products Route', () => {
 
       expect(answer.body[0].quantity).toEqual(7);
       expect(answer.body[0].price).toEqual(1);
-      // expect(answer.body[0].avgPriceFiveLast).toEqual(1);
+      expect(answer.body[0].avgPriceFiveLast).toEqual(1);
 
-      // expect(answer.body[0].stock[0].qty).toEqual(entries[0].qty);
-      // expect(answer.body[0].stock[0].price).toEqual(entries[0].price);
-      // expect(answer.body[0].stock[0].sourceOrDestination).toEqual(entries[0].sourceOrDestination);
-      // expect(answer.body[0].stock[0].date).toEqual(entries[0].date);
+      expect(answer.body[0].stock[0].qty).toEqual(entries[0].qty);
+      expect(answer.body[0].stock[0].price).toEqual(entries[0].price);
+      expect(answer.body[0].stock[0].sourceOrDestination).toEqual(entries[0].sourceOrDestination);
 
-      // expect(answer.body[0].stock[1].qty).toEqual(entries[1].qty);
-      // expect(answer.body[0].stock[1].price).toEqual(entries[1].price);
-      // expect(answer.body[0].stock[1].sourceOrDestination).toEqual(entries[1].sourceOrDestination);
-      // expect(answer.body[0].stock[1].date).toEqual(entries[1].date);
+      expect(answer.body[0].stock[1].qty).toEqual(entries[1].qty);
+      expect(answer.body[0].stock[1].price).toEqual(entries[1].price);
+      expect(answer.body[0].stock[1].sourceOrDestination).toEqual(entries[1].sourceOrDestination);
     });
   });
 

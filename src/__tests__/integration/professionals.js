@@ -37,7 +37,7 @@ describe('Professionals Route', () => {
       });
     });
 
-    it.only('receives a list of professionals', async () => {
+    it('receives a list of professionals', async () => {
       const professionalsList = [
         { name: 'Mary' },
         { name: 'Carl' },
