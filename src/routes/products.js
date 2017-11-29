@@ -1,25 +1,18 @@
 import Product from '../models/Products';
+import Controller from '../controllers/Products'
 import { NOT_UNIQUE, BLANK, INVALID } from '../errors';
-// import * as helpers from '../helpers/products';
+
+const controller = new Controller;
 
 export default (server) => {
   server.route({
     method: 'GET',
     path: '/products',
     handler: async (req, res) => {
-      await Product.find((err, products) => {
-        if (err) {
-          console.log("error on GET")
-          return res({
-            code: 500,
-            error: 'Could not fetch products',
-          });
-        }
-        return res({
-          code: 200,
-          body: products
-        });
-      })
+      return res({
+        code: 200,
+        body: await controller.getAll(),
+      });
     }
   });
 

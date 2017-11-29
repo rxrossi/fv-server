@@ -1,7 +1,10 @@
 import 'isomorphic-fetch';
 import Product from '../../models/Products';
+import Stock from '../../controllers/Stock';
 import configureServer from '../../index';
 import { NOT_UNIQUE } from '../../errors';
+
+const stock = new Stock;
 
 const PRODUCTS_URL = 'http://localhost:5001/products';
 let server;
@@ -87,20 +90,6 @@ describe('Products Route', () => {
     });
 
     it('sends a a list of products with valid stock when entries exist', async () => {
-      const entries = [
-        {
-          qty: -3,
-          price: 1,
-          sourceOrDestination: 'Client X, to do Y',
-          date: '10 25 2017',
-        },
-        {
-          qty: 10,
-          price: 1,
-          sourceOrDestination: 'Company one',
-          date: '10 24 2017',
-        },
-      ];
 
       const product = { name: 'OX', measure_unit: 'ml' };
 
@@ -111,16 +100,27 @@ describe('Products Route', () => {
       });
 
       const ox = await Product.findOne({ name: 'OX' })
-      ox.stock.push(entries[0])
-      ox.stock.push(entries[1])
-      // console.log(ox.stock)
-      ox.save();
+
+      const entries = [
+        {
+          id: ox.id,
+          qty: -3,
+          price: 1,
+          date: '10 25 2017',
+        },
+        {
+          id: ox.id,
+          qty: 10,
+          price: 1,
+          date: '10 24 2017',
+        },
+      ];
+
+      stock.create(entries[0]);
+      stock.create(entries[1]);
 
       const answer = await fetch(PRODUCTS_URL)
         .then(res => res.json());
-
-      console.log(answer.body[0])
-      console.log(answer.body[0].stock)
 
       expect(answer.code).toEqual(200);
       expect(answer.body.length).toEqual(1);

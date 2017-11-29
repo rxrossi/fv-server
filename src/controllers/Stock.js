@@ -6,4 +6,19 @@ export default class StockController {
       .populate('product')
       .then(entries=> entries.map(entry => entry.toObject()))
   }
+  create(product) {
+    const entry = new Stock({
+      product: product.id,
+      qty: product.qty,
+      price: product.price,
+      date: Date.now(),
+    })
+
+    return entry.save((err, entry) => {
+      if (err) {
+        console.error('Could not save stock entry', err);
+      }
+      return entry;
+    });
+  }
 }

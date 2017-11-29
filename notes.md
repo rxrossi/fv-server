@@ -27,7 +27,7 @@ Models:
 Purchase: {
   seller,
   date,
-  products: [
+  stock: [
     stock_id,
   ],
 }
@@ -39,7 +39,7 @@ Sales: {
   end_time,
   client_id,
   professional_id,
-  products: [
+  stock: [
     stock_id
   ]
 }
@@ -82,14 +82,13 @@ Product: {
   ]
 }
 
-It is really easy to pupulate with mongoose
 Next steps, server side
-+ Move the subdocument stock from products to is own Model, reference in on products
-  + Create a working controller for get all that populates stock entries
-  + Make the virtuals work
-+ Make Products integration tests work
-+ Make Purchases integration tests work
++ [X] Move the subdocument stock from products to is own Model, reference in on products
+  + [X] Create a working controller for get all that populates stock entries
+  + [X] Make the virtuals work
++ [X] Make Products integration tests work
++ [ ] Make Purchases integration tests work
 
 Then, client side
-+ Write the sales feature
++ [ ] Write the sales feature
 

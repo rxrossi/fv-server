@@ -80,11 +80,13 @@ describe('ProductsController', () => {
     });
 
     it('return a stock entry', async () => {
+      // Prepare
       const sut = new StockController;
 
       // Act
       const answer = await sut.getAll();
 
+      // Assert
       expect(answer[0].qty).toBe(1);
       expect(answer[0].price).toBe(10);
       expect(answer[0].product.name).toBe(ox.name);
@@ -101,27 +103,30 @@ describe('ProductsController', () => {
         if (err) {
           console.error(err);
         }
-
-        const entryOne = new StockModel({
-          product: product._id,
-          date: '10 27 2017',
-          qty: 1,
-          price: 10,
-        });
-
-        entryOne.save((err, entry) => {
-          if (err) {
-            console.error('entry', err);
-          }
-          done();
-        });
+        done();
       });
     });
-  });
 
-  it('adds a stock entry', async () => {
-    const sut = new StockController;
+    it('adds a stock entry', async () => {
+      const { id:productId } = await ProductModel.findOne({name: ox.name});
 
-    // to see the body, check the client
+      const postBody = {
+        id: productId,
+        qty: 4,
+        price: 12,
+      };
+
+      const sut = new StockController;
+
+      await sut.create(postBody);
+
+      // Act
+      const stock = await sut.getAll();
+
+      // Assert
+      expect(stock[0].product.name).toEqual(ox.name);
+      expect(stock[0].price).toEqual(postBody.price);
+      expect(stock[0].qty).toEqual(postBody.qty);
+    });
   });
 });
