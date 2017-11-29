@@ -85,6 +85,8 @@ Product: {
 It is really easy to pupulate with mongoose
 Next steps, server side
 + Move the subdocument stock from products to is own Model, reference in on products
+  + Create a working controller for get all that populates stock entries
+  + Make the virtuals work
 + Make Products integration tests work
 + Make Purchases integration tests work
 
