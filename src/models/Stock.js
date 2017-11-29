@@ -1,9 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
+import Product from '../models/Products';
 
 const stockSchema = Schema({
-  product: { type: Schema.Types.ObjectId, ref: 'Products' },
-  sale: { type: Schema.Types.ObjectId, ref: 'Products' },
-  purchase: { type: Schema.Types.ObjectId, ref: 'Products' },
+  product: { type: Schema.Types.ObjectId, ref: 'Product' },
+  sale: { type: Schema.Types.ObjectId, ref: 'Sales' },
+  purchase: { type: Schema.Types.ObjectId, ref: 'Purchases' },
   qty: { type: Number, required: true },
   price: { type: Number, required: true },
   date: { type: Date, required: true },

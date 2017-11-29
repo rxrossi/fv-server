@@ -11,14 +11,47 @@ describe('ProductsController', () => {
       .then(() => done())
   });
 
-  it('returns getAll when there are products', async () => {
-    // Prepare
-    await ProductModel.deleteMany({}, (err) => {
+  beforeEach((done) => {
+    // Delete all products
+    ProductModel.deleteMany({}, (err) => {
       if (err) {
         console.error('an error', err);
       }
-    })
+      done();
+    });
+  });
 
+  afterEach((done) => {
+    // Delete all products
+    ProductModel.deleteMany({}, (err) => {
+      if (err) {
+        console.error('an error', err);
+      }
+      done();
+    });
+  });
+
+  beforeEach((done) => {
+    // Delete all stock
+    StockModel.deleteMany({}, (err) => {
+      if (err) {
+        console.error('an error', err);
+      }
+      done();
+    });
+  });
+
+  afterEach((done) => {
+    // Delete all stock
+    StockModel.deleteMany({}, (err) => {
+      if (err) {
+        console.error('an error', err);
+      }
+      done();
+    });
+  });
+
+  it('returns getAll when there are products', async () => {
     const ox = new ProductModel({ name: 'OX', measure_unit: 'ml' });
 
     await ox.save((err, product) => {
@@ -48,5 +81,9 @@ describe('ProductsController', () => {
     expect(products[0].price).toBe(10);
     expect(products[0].quantity).toBe(1);
     expect(products[0].avgPriceFiveLast).toBe(10);
+  });
+
+  xit('creates a product', () => {
+
   });
 });
