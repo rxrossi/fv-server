@@ -28,10 +28,7 @@ Purchase: {
   seller,
   date,
   products: [
-    {
-      product_id,
-      stock_id,
-    }
+    stock_id,
   ],
 }
 
@@ -43,10 +40,7 @@ Sales: {
   client_id,
   professional_id,
   products: [
-    {
-      product_id,
-      stock_id,
-    }
+    stock_id
   ]
 }
 
@@ -62,7 +56,9 @@ Product.stock( // actual
 Product.stock( // what I need
   {
     id,
+    product_id,
     qty,
+    price,
     sale_id,
     purchase_id,
     date,
@@ -85,3 +81,13 @@ Product: {
     description // of a sort of join using sale_id or purchase_id
   ]
 }
+
+It is really easy to pupulate with mongoose
+Next steps, server side
++ Move the subdocument stock from products to is own Model, reference in on products
++ Make Products integration tests work
++ Make Purchases integration tests work
+
+Then, client side
++ Write the sales feature
+
