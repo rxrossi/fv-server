@@ -7,6 +7,9 @@ Next steps, server side
 + [X] Make Purchases integration tests work
 + [X] extract configure server from index, it makes the test to not work correctly with jest watch
 
++ [ ] Purchases View needs to have a link to view one
++ [ ] Implement Purchases View One
+
 Then, client side
 + [ ] Write the sales feature
 
