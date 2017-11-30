@@ -36,12 +36,26 @@ export default class Purchases {
   }
 
   getAll() {
-    return PurchasesModel.find({}).populate({
-      path: 'products',
-      populate: {
-        path: 'product',
-        select: 'name measure_unit'
-      }
-    });
+    return PurchasesModel
+      .find({})
+      .populate({
+        path: 'products',
+        populate: {
+          path: 'product',
+          select: 'name measure_unit'
+        }
+      })
+      .lean()
+      .then((purchases) => {
+        return purchases.map((purchase) => {
+          return {
+            ...purchase,
+            price: purchase.products.reduce((prev, entry) => {
+              // console.log(prev, entry.price)
+              return prev + entry.price
+            }, 0),
+          }
+        })
+      })
   }
 }

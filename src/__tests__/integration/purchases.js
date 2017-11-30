@@ -113,12 +113,9 @@ describe('Purchases Route', () => {
         body: JSON.stringify(postBody),
       }).then(res => res.json());
 
-      const afterList = await PurchasesModel.find((err, purchases) => {
-        return purchases;
-      });
-
       expect(res.code).toEqual(201); //201 means created
       expect(res.body.seller).toEqual('Company one');
+      expect(res.body.price).toEqual(130);
       expect(res.body.products[0].product.name).toEqual(ox.name);
     });
   })
