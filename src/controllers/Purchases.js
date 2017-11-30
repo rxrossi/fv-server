@@ -21,6 +21,18 @@ export default class Purchases {
       price: item.price,
       date,
     })});
+
+    return this.getOne(purchase_id)
+  }
+
+  getOne(id) {
+    return PurchasesModel.findOne({ _id: id }).populate({
+      path: 'products',
+      populate: {
+        path: 'product',
+        select: 'name measure_unit'
+      }
+    });
   }
 
   getAll() {

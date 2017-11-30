@@ -2,7 +2,7 @@ import 'isomorphic-fetch';
 import PurchasesModel from '../../models/Purchases';
 import ProductModel from '../../models/Products';
 import PurchasesController from '../../controllers/Purchases';
-import configureServer from '../../index';
+import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
 
 const PURCHASES_URL = 'http://localhost:5001/purchases';
@@ -69,7 +69,7 @@ describe('Purchases Route', () => {
       });
     });
 
-    it.only('receives a list of purchases', async () => {
+    it('receives a list of purchases', async () => {
       // Prepare
       const postBody = {
         products: [
@@ -99,23 +99,27 @@ describe('Purchases Route', () => {
       });
       expect(beforeList.length).toBe(0);
 
-      const purchaseExample = {
-        name: 'Carl',
-      };
+      const postBody = {
+        products: [
+          { id: ox._id, qty: 500, price: 90 },
+          { id: ox._id, qty: 1000, price: 40 },
+        ],
+        seller: 'Company one',
+        date: Date.now(),
+      }
 
       const res = await fetch(PURCHASES_URL, {
         method: 'POST',
-        body: JSON.stringify(purchaseExample),
+        body: JSON.stringify(postBody),
       }).then(res => res.json());
 
       const afterList = await PurchasesModel.find((err, purchases) => {
         return purchases;
       });
-      expect(afterList.length).toBe(1);
-      expect(afterList[0].name).toEqual(purchaseExample.name);
 
       expect(res.code).toEqual(201); //201 means created
-      expect(res.body.name).toEqual(purchaseExample.name);
+      expect(res.body.seller).toEqual('Company one');
+      expect(res.body.products[0].product.name).toEqual(ox.name);
     });
   })
 });

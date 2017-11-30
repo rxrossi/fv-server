@@ -15,4 +15,17 @@ export default (server) => {
       });
     }
   })
+
+  server.route({
+    method: 'POST',
+    path: '/purchases',
+    handler: async (req, res) => {
+      const purchase = await controller.create(req.payload);
+      return res({
+        code: 201,
+        body: purchase
+      });
+    }
+  })
 }
+

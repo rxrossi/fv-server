@@ -52,6 +52,7 @@ describe('ProductsController', () => {
   });
 
   it('returns getAll when there are products', async () => {
+    // Prepare
     const ox = new ProductModel({ name: 'OX', measure_unit: 'ml' });
 
     await ox.save((err, product) => {
@@ -83,7 +84,24 @@ describe('ProductsController', () => {
     expect(products[0].avgPriceFiveLast).toBe(10);
   });
 
-  xit('creates a product', () => {
+  it('creates a product', async () => {
+    const ox = { name: 'OX', measure_unit: 'ml' };
 
+    sut = new ProductsController;
+
+    const { product, errors } = await sut.create(ox);
+
+    expect(product.name).toEqual(ox.name);
+  });
+
+  it('cannot create a product with duplicated name', async () => {
+    const ox = { name: 'OX', measure_unit: 'ml' };
+
+    sut = new ProductsController;
+
+    await sut.create(ox);
+    const { product, errors } = await sut.create(ox);
+
+    expect(errors.name).toEqual('NOT_UNIQUE');
   });
 });

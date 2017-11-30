@@ -86,10 +86,10 @@ Next steps, server side
 + [X] Move the subdocument stock from products to is own Model, reference in on products
   + [X] Create a working controller for get all that populates stock entries
   + [X] Make the virtuals work
-+ [ ] Make Products integration tests work
-  + [ ] Fix the issue with products route test
-+ [ ] Make Purchases integration tests work
-+ [ ] extract configure server from index, it makes the test to not work correctly with jest watch
++ [X] Make Products integration tests work
+  + [X] Fix the issue with products route test
++ [X] Make Purchases integration tests work
++ [X] extract configure server from index, it makes the test to not work correctly with jest watch
 
 Then, client side
 + [ ] Write the sales feature

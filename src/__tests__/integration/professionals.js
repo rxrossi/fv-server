@@ -1,6 +1,6 @@
 import 'isomorphic-fetch';
 import Professional from '../../models/Professionals';
-import configureServer from '../../index';
+import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
 
 const PROFESSIONALS_URL = 'http://localhost:5001/professionals';

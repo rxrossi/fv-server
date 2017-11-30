@@ -1,6 +1,6 @@
 import 'isomorphic-fetch';
 import Client from '../../models/Clients';
-import configureServer from '../../index';
+import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
 
 const CLIENTS_URL = 'http://localhost:5001/clients';

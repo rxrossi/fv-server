@@ -20,47 +20,18 @@ export default (server) => {
     path: '/products',
     method: 'POST',
     handler: async (req, res) => {
-      const { name, measure_unit } = req.payload;
-      const errors = {};
+      const { product, errors } = await controller.create(req.payload);
 
-      const validMeasureUnits = [
-        "ml", "unit", "mg"
-      ];
-
-      if (!validMeasureUnits.includes(measure_unit)) {
-        errors.measure_unit = INVALID;
-      }
-
-      if (!measure_unit) {
-        errors.measure_unit = BLANK;
-      }
-
-      // Check if name is duplicated
-      await Product.findOne({ "name": { $regex : new RegExp(name, "i") } }, (err, product) => {
-        if (err) {
-          return console.error('error when finding a product with this name');
-        }
-        if (product) {
-          errors.name = NOT_UNIQUE;
-        }
-      });
-
-      if (!name) {
-        errors.name = BLANK;
-      }
-
-      if (!Object.keys(errors).length) {
-        const product = new Product(req.payload);
-        product.save();
+      if (errors) {
         return res({
-          code: 201,
-          body: product,
+          code: 422, // 409 is conflict
+          errors
         });
       }
 
       return res({
-        code: 422, // 409 is conflict
-        errors
+        code: 201,
+        body: product,
       });
     }
   });

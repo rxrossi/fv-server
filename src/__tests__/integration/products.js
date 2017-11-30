@@ -1,7 +1,7 @@
 import 'isomorphic-fetch';
 import Product from '../../models/Products';
 import Stock from '../../controllers/Stock';
-import configureServer from '../../index';
+import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
 
 const stock = new Stock;
@@ -103,21 +103,21 @@ describe('Products Route', () => {
 
       const entries = [
         {
-          id: ox.id,
+          product: ox.id,
           qty: -3,
           price: 1,
           date: '10 25 2017',
         },
         {
-          id: ox.id,
+          product: ox.id,
           qty: 10,
-          price: 1,
+          price: 2,
           date: '10 24 2017',
         },
       ];
 
-      stock.create(entries[0]);
-      stock.create(entries[1]);
+      await stock.create(entries[0]);
+      await stock.create(entries[1]);
 
       const answer = await fetch(PRODUCTS_URL)
         .then(res => res.json());
@@ -127,8 +127,8 @@ describe('Products Route', () => {
       expect(answer.body[0].name).toEqual(product.name);
 
       expect(answer.body[0].quantity).toEqual(7);
-      expect(answer.body[0].price).toEqual(1);
-      expect(answer.body[0].avgPriceFiveLast).toEqual(1);
+      expect(answer.body[0].price).toEqual(2);
+      expect(answer.body[0].avgPriceFiveLast).toEqual(2);
 
       expect(answer.body[0].stock[0].qty).toEqual(entries[0].qty);
       expect(answer.body[0].stock[0].price).toEqual(entries[0].price);
