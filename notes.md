@@ -89,6 +89,7 @@ Next steps, server side
 + [ ] Make Products integration tests work
   + [ ] Fix the issue with products route test
 + [ ] Make Purchases integration tests work
++ [ ] extract configure server from index, it makes the test to not work correctly with jest watch
 
 Then, client side
 + [ ] Write the sales feature

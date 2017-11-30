@@ -9,7 +9,7 @@ import corsHeaders from 'hapi-cors-headers';
 const configureServer = async () => {
   let server = new Hapi.Server();
 
-  server.connection({
+  await server.connection({
     host: 'localhost',
     port: 5001
   });
@@ -24,6 +24,7 @@ const configureServer = async () => {
   PurchasesRoutes(server);
 
   mongoose.Promise = global.Promise;
+
   return mongoose.connect('mongodb://localhost/fv', { useMongoClient: true })
     .then(() => {
       return server;
@@ -31,9 +32,9 @@ const configureServer = async () => {
 
 }
 
-configureServer().then((server) => {
-  server.start();
-});
+// configureServer().then((server) => {
+//   server.start();
+// });
 
 export default configureServer;
 

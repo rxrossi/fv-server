@@ -6,7 +6,6 @@ const stock = new StockController;
 
 export default class Purchases {
   async create({ date, seller, products }) {
-    // console.log(purchase)
     const purchase = new PurchasesModel({
       date,
       seller,

@@ -23,7 +23,7 @@ describe('Clients Route', () => {
   });
 
   afterEach((done) => {
-    server.stop(done);
+    server.stop().then(() => done());
   });
 
   describe('GET Route', () => {
