@@ -53,7 +53,7 @@ productSchema.virtual('stock', {
   ref: 'Stock',
   localField: '_id',
   foreignField: 'product',
-})
+});
 
 // productSchema.populate('stock').virtual('price').get(function() {
 //   return addPrice(this.stock)

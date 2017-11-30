@@ -111,7 +111,7 @@ describe('ProductsController', () => {
       const { id:productId } = await ProductModel.findOne({name: ox.name});
 
       const postBody = {
-        id: productId,
+        product: productId,
         qty: 4,
         price: 12,
       };

@@ -6,9 +6,11 @@ export default class StockController {
       .populate('product')
       .then(entries=> entries.map(entry => entry.toObject()))
   }
+
   create(product) {
     const entry = new Stock({
-      product: product.id,
+      product: product.product,
+      purchase: product.purchase,
       qty: product.qty,
       price: product.price,
       date: Date.now(),

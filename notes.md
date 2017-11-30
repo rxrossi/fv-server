@@ -86,7 +86,8 @@ Next steps, server side
 + [X] Move the subdocument stock from products to is own Model, reference in on products
   + [X] Create a working controller for get all that populates stock entries
   + [X] Make the virtuals work
-+ [X] Make Products integration tests work
++ [ ] Make Products integration tests work
+  + [ ] Fix the issue with products route test
 + [ ] Make Purchases integration tests work
 
 Then, client side

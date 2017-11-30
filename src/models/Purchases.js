@@ -1,18 +1,23 @@
 import mongoose, { Schema } from 'mongoose';
 import Product from '../models/Products';
+import Stock from '../models/Stock';
 
 const purchasesSchema = Schema({
-  stock: [{ type: Schema.Types.ObjectId, ref: 'Products' }],
   seller: { type: String, required: true },
   date: { type: Date, required: true },
+});
+
+purchasesSchema.virtual('products', {
+  ref: 'Stock',
+  localField: '_id',
+  foreignField: 'purchase',
 });
 
 purchasesSchema.virtual('id').get(function(){
     return this._id.toHexString();
 });
 
-purchasesSchema.set('toJSON', {
-    virtuals: true
-});
+purchasesSchema.set('toObject', { getters: true, virtuals: true });
+purchasesSchema.set('toJSON', { getters: true, virtuals: true });
 
 export default mongoose.model('Purchases', purchasesSchema);

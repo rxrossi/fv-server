@@ -57,7 +57,7 @@ describe('Purchases Controller', () => {
 
   beforeEach((done) => {
     // Delete all purchases
-    StockModel.deleteMany({}, (err) => {
+    PurchasesModel.deleteMany({}, (err) => {
       if (err) {
         console.error('an error', err);
       }
@@ -67,7 +67,7 @@ describe('Purchases Controller', () => {
 
   afterEach((done) => {
     // Delete all purchases
-    StockModel.deleteMany({}, (err) => {
+    PurchasesModel.deleteMany({}, (err) => {
       if (err) {
         console.error('an error', err);
       }
@@ -112,8 +112,32 @@ describe('Purchases Controller', () => {
       await sut.create(postBody);
 
       // Assert
-      const purchases = await PurchasesModel.find({});
-      console.log(purchases)
+      const purchases = await PurchasesModel.find({}).populate('products');
+
+      expect(purchases[0].products.length).toBe(2);
+      expect(purchases[0].seller).toEqual("Company one");
+      expect(purchases[0].products[0].qty).toEqual(500);
+    });
+
+    it('returns all purchases correctly with products and their name populated', async () => {
+      // Prepare
+      const postBody = {
+        products: [
+          { id: ox._id, qty: 500, price: 90 },
+          { id: shampoo._id, qty: 1000, price: 40 },
+        ],
+        seller: 'Company one',
+        date: Date.now(),
+      };
+
+      const sut = new PurchasesController;
+      await sut.create(postBody);
+
+      // Act
+      const purchases = await sut.getAll();
+
+      // Assert
+      expect(purchases[0].products[0].product.name).toEqual(ox.name);
     });
   });
 });
