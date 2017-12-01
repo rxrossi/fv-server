@@ -8,13 +8,14 @@ Next steps, server side
 + [X] extract configure server from index, it makes the test to not work correctly with jest watch
 
 + [X] Purchases View needs to have a link to view one
-+ [ ] purchases has purchase.products, it should be purchase.stockEntries
-+ [ ] Implement Purchases View One
++ [X] purchases has purchase.products, it should be purchase.stockEntries
++ [X] Implement Purchases View One
 
-+ [ ] Client complains about professional.id not existing
-+ [ ] Client complains about `purchases[0].products[0].id` is marked as required in `View`, but its value is `undefined`. 
-+ [ ] product ViewOne  Warning: Each child in an array or iterator should have a unique "key" prop.
-
++ [X] Client complains about professional.id not existing
++ [X] Client complains about `purchases[0].products[0].id` is marked as required in `View`, but its value is `undefined`. 
++ [X] product ViewOne  Warning: Each child in an array or iterator should have a unique "key" prop.
++ [X] Failed prop type: The prop `purchases[0].stockEntries[0].id` is marked as required in `View`, but its value is `undefined`
++ [X]  Each child in an array or iterator should have a unique "key" prop. in ViewOne
 
 Then, client side
 + [ ] Write the sales feature

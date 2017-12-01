@@ -1,6 +1,13 @@
 import mongoose from 'mongoose';
 
-export default mongoose.model('Client', mongoose.Schema({
+const clientsSchema = mongoose.Schema({
   name: { type: String, unique: true },
   phone: String,
-}));
+});
+
+clientsSchema.virtual('id').get(function() {
+    return this._id.toHexString();
+});
+
+export default mongoose.model('Client', clientsSchema);
+

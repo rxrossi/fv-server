@@ -116,6 +116,7 @@ describe('Purchases Route', () => {
       expect(res.code).toEqual(201); //201 means created
       expect(res.body.seller).toEqual('Company one');
       expect(res.body.price).toEqual(130);
+      expect(typeof res.body.stockEntries[0].id).toEqual("string");
       expect(res.body.stockEntries[0].product.name).toEqual(ox.name);
     });
   })

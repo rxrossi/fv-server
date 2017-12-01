@@ -54,6 +54,7 @@ describe('Professionals Route', () => {
 
       expect(answer.code).toEqual(200);
       expect(answer.body.length).toEqual(2);
+      expect(typeof answer.body[0].id).toEqual("string");
       expect(answer.body[0].name).toEqual(professionalsList[0].name);
     });
   })

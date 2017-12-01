@@ -19,4 +19,8 @@ stockSchema.set('toJSON', {
     virtuals: true
 });
 
+stockSchema.set('toObject', {
+    virtuals: true
+});
+
 export default mongoose.model('Stock', stockSchema);

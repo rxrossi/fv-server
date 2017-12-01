@@ -55,30 +55,11 @@ productSchema.virtual('stock', {
   foreignField: 'product',
 });
 
-// productSchema.populate('stock').virtual('price').get(function() {
-//   return addPrice(this.stock)
-// });
+productSchema.virtual('id').get(function() {
+    return this._id.toHexString();
+});
 
 productSchema.set('toObject', { getters: true, virtuals: true });
 productSchema.set('toJSON', { getters: true, virtuals: true });
 
 export default mongoose.model('Product', productSchema);
-
-
-// productSchema.virtual('quantity').get(function() {
-//   return addQuantity(this.stock);
-// });
-
-// productSchema.virtual('avgPriceFiveLast').get(function() {
-//   return addAvgPriceFiveLast(this.stock);
-// });
-
-// productSchema.set('toObject', { getters: true, virtuals: true });
-// productSchema.set('toJSON', { getters: true, virtuals: true });
-
-// const stockSchema = new Schema({
-//   qty: Number,
-//   price: Number,
-//   sourceOrDestination: String,
-//   date: Date,
-// })
