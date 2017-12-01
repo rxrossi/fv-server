@@ -112,15 +112,14 @@ describe('Purchases Controller', () => {
       await sut.create(postBody);
 
       // Assert
-      const purchases = await PurchasesModel.find({}).populate('products');
+      const purchases = await PurchasesModel.find({}).populate('stockEntries');
 
-      expect(purchases[0].products.length).toBe(2);
+      expect(purchases[0].stockEntries.length).toBe(2);
       expect(purchases[0].seller).toEqual("Company one");
-      expect(purchases[0].price).toEqual(130);
-      expect(purchases[0].products[0].qty).toEqual(500);
+      expect(purchases[0].stockEntries[0].qty).toEqual(500);
     });
 
-    it.only('returns all purchases correctly with products and their name populated', async () => {
+    it('returns all purchases correctly with products and their name populated', async () => {
       // Prepare
       const postBody = {
         products: [
@@ -136,10 +135,9 @@ describe('Purchases Controller', () => {
 
       // Act
       const purchases = await sut.getAll();
-      console.log(purchases)
 
       // Assert
-      expect(purchases[0].products[0].product.name).toEqual(ox.name);
+      expect(purchases[0].stockEntries[0].product.name).toEqual(ox.name);
     });
   });
 });

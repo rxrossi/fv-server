@@ -17,16 +17,28 @@ describe('Products Route', () => {
         return server;
       });
 
-    await Product.deleteMany({}, (err) => {
+  });
+
+  beforeEach((done) => {
+    Product.deleteMany({}, (err) => {
       if (err) {
         throw "Could not Product.deleteMany on DB";
       }
-      return true;
+      done();
     })
   });
 
   afterEach((done) => {
     server.stop().then(() => done());
+  });
+
+  afterAll((done) => {
+    Product.deleteMany({}, (err) => {
+      if (err) {
+        throw "Could not Product.deleteMany on DB";
+      }
+      done();
+    })
   });
 
   describe('GET Route', () => {

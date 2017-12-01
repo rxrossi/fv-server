@@ -4,6 +4,18 @@ import StockController from '../controllers/Stock';
 
 const stock = new StockController;
 
+function addPriceToPurchases(purchases) {
+  return purchases.map((purchase) => {
+    return {
+      ...purchase,
+      price: purchase.stockEntries.reduce((prev, entry) => {
+        return prev + entry.price
+      }, 0),
+    }
+  })
+
+}
+
 export default class Purchases {
   async create({ date, seller, products }) {
     const purchase = new PurchasesModel({
@@ -15,47 +27,39 @@ export default class Purchases {
 
     products.map(async item => {
       await stock.create({
-      product: item.id,
-      purchase: purchase_id,
-      qty: item.qty,
-      price: item.price,
-      date,
-    })});
+        product: item.id,
+        purchase: purchase_id,
+        qty: item.qty,
+        price: item.price,
+        date,
+      })});
 
     return this.getOne(purchase_id)
   }
 
   getOne(id) {
-    return PurchasesModel.findOne({ _id: id }).populate({
-      path: 'products',
-      populate: {
-        path: 'product',
-        select: 'name measure_unit'
-      }
-    });
+    return PurchasesModel.findOne({ _id: id })
+      .populate({
+        path: 'stockEntries',
+        populate: {
+          path: 'product',
+          select: 'name measure_unit'
+        }
+      })
+      .then(purchase => addPriceToPurchases([purchase.toObject()])[0])
   }
 
   getAll() {
     return PurchasesModel
       .find({})
       .populate({
-        path: 'products',
+        path: 'stockEntries',
         populate: {
           path: 'product',
           select: 'name measure_unit'
         }
       })
-      .lean()
-      .then((purchases) => {
-        return purchases.map((purchase) => {
-          return {
-            ...purchase,
-            price: purchase.products.reduce((prev, entry) => {
-              // console.log(prev, entry.price)
-              return prev + entry.price
-            }, 0),
-          }
-        })
-      })
+      .then(purchases => purchases.map(purchase => purchase.toObject()))
+      .then((purchases) => addPriceToPurchases(purchases))
   }
 }

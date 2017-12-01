@@ -7,8 +7,14 @@ Next steps, server side
 + [X] Make Purchases integration tests work
 + [X] extract configure server from index, it makes the test to not work correctly with jest watch
 
-+ [ ] Purchases View needs to have a link to view one
++ [X] Purchases View needs to have a link to view one
++ [ ] purchases has purchase.products, it should be purchase.stockEntries
 + [ ] Implement Purchases View One
+
++ [ ] Client complains about professional.id not existing
++ [ ] Client complains about `purchases[0].products[0].id` is marked as required in `View`, but its value is `undefined`. 
++ [ ] product ViewOne  Warning: Each child in an array or iterator should have a unique "key" prop.
+
 
 Then, client side
 + [ ] Write the sales feature

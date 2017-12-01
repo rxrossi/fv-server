@@ -88,7 +88,7 @@ describe('Purchases Route', () => {
         .then(res => res.json());
 
       // Assert
-      expect(answer.body[0].products[0].product.name).toEqual(ox.name);
+      expect(answer.body[0].stockEntries[0].product.name).toEqual(ox.name);
     });
   })
 
@@ -116,7 +116,7 @@ describe('Purchases Route', () => {
       expect(res.code).toEqual(201); //201 means created
       expect(res.body.seller).toEqual('Company one');
       expect(res.body.price).toEqual(130);
-      expect(res.body.products[0].product.name).toEqual(ox.name);
+      expect(res.body.stockEntries[0].product.name).toEqual(ox.name);
     });
   })
 });

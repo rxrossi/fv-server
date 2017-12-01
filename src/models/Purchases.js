@@ -7,7 +7,7 @@ const purchasesSchema = Schema({
   date: { type: Date, required: true },
 });
 
-purchasesSchema.virtual('products', {
+purchasesSchema.virtual('stockEntries', {
   ref: 'Stock',
   localField: '_id',
   foreignField: 'purchase',
