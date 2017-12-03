@@ -19,6 +19,19 @@ Next steps, server side
 
 Then, client side
 + [ ] Write the sales feature
+  + [ ] Add, lacking errors show
+
+# Sales
+## Form fields
+Name (of the sevice)
+Value 
+Payment form (select)
+Date
+Start Time
+End Time
+Professional
+Products used (dynamic fields)
+
 
 # Tips for next features
 Container should fetch list, components should not, the closest possible to a dumb componenet, the better, I think...
