@@ -23,6 +23,15 @@ Then, client side
   + [ ] Add, lacking errors show
 
 
+# Bugs
+
++ [ ] submiting a purchase does not clear the form
++ [ ] doing a purchase with invalid date does not show any error
++ [ ] sales does not work, probably a error with submit
++ [ ] sales on server side don't really calculate the cost of credit card
++ [ ]
+
+
 
 
 # Sales
