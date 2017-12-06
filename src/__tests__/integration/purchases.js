@@ -1,12 +1,17 @@
-import 'isomorphic-fetch';
+import 'isomorphic-fetch'; /* global fetch */
 import PurchasesModel from '../../models/Purchases';
 import ProductModel from '../../models/Products';
 import PurchasesController from '../../controllers/Purchases';
 import configureServer from '../../configureServer';
-import { NOT_UNIQUE } from '../../errors';
 
 const PURCHASES_URL = 'http://localhost:5001/purchases';
 let server;
+
+const genericErrorHandler = (err) => {
+  if (err) {
+    throw new Error(err);
+  }
+};
 
 describe('Purchases Route', () => {
   let ox;
@@ -14,58 +19,33 @@ describe('Purchases Route', () => {
 
   beforeEach(async () => {
     server = await configureServer()
-      .then((server) => {
-        server.start();
-        return server;
+      .then((sv) => {
+        sv.start();
+        return sv;
       });
 
-    await PurchasesModel.deleteMany({}, (err) => {
-      if (err) {
-        throw "Could not PurchasesModel.deleteMany on DB";
-      }
-      return true;
-    })
+    await PurchasesModel.deleteMany({}, genericErrorHandler);
+    await ProductModel.deleteMany({}, genericErrorHandler);
 
-    await ProductModel.deleteMany({}, (err) => {
-      if (err) {
-        throw "Could not ProductModel.deleteMany on DB";
-      }
-      return true;
-    })
-
-  });
-
-  beforeEach((done) => {
-    // inserting products
     ox = new ProductModel({ name: 'OX', measure_unit: 'ml' });
-    ox.save((err, product) => {
-      if (err) {
-        console.error(err);
-      }
-      done();
-    });
+    await ox.save();
 
     shampoo = new ProductModel({ name: 'shampoo', measure_unit: 'ml' });
-    shampoo.save((err, product) => {
-      if (err) {
-        console.error(err);
-      }
-      done();
-    });
+    await shampoo.save();
   });
 
-  afterEach((done) => {
-    server.stop().then(() => done());
+  afterEach(async () => {
+    await server.stop();
   });
 
   describe('GET Route', () => {
     it('receives an empty array when no purchases', async () => {
       const answer = await fetch(PURCHASES_URL)
-        .then(res => res.json())
+        .then(res => res.json());
 
       expect(answer).toEqual({
         code: 200,
-        body: []
+        body: [],
       });
     });
 
@@ -78,9 +58,9 @@ describe('Purchases Route', () => {
         ],
         seller: 'Company one',
         date: Date.now(),
-      }
+      };
 
-      const purchasesController = new PurchasesController;
+      const purchasesController = new PurchasesController();
       await purchasesController.create(postBody);
 
       // Act
@@ -90,13 +70,11 @@ describe('Purchases Route', () => {
       // Assert
       expect(answer.body[0].stockEntries[0].product.name).toEqual(ox.name);
     });
-  })
+  });
 
   describe('POST Route', () => {
     it('Can post a purchase', async () => {
-      const beforeList = await PurchasesModel.find((err, purchases) => {
-        return purchases;
-      });
+      const beforeList = await PurchasesModel.find((err, purchases) => purchases);
       expect(beforeList.length).toBe(0);
 
       const postBody = {
@@ -106,18 +84,23 @@ describe('Purchases Route', () => {
         ],
         seller: 'Company one',
         date: Date.now(),
-      }
+      };
 
       const res = await fetch(PURCHASES_URL, {
         method: 'POST',
         body: JSON.stringify(postBody),
-      }).then(res => res.json());
+      }).then(resp => resp.json());
 
-      expect(res.code).toEqual(201); //201 means created
+      expect(res.code).toEqual(201); // 201 means created
       expect(res.body.seller).toEqual('Company one');
       expect(res.body.price).toEqual(130);
-      expect(typeof res.body.stockEntries[0].id).toEqual("string");
+      expect(typeof res.body.stockEntries[0].id).toEqual('string');
       expect(res.body.stockEntries[0].product.name).toEqual(ox.name);
     });
-  })
+  });
+
+  afterAll(async () => {
+    await PurchasesModel.deleteMany({}, genericErrorHandler);
+    await ProductModel.deleteMany({}, genericErrorHandler);
+  });
 });

@@ -19,7 +19,11 @@ Next steps, server side
 
 Then, client side
 + [ ] Write the sales feature
+  + [ ] the format of products is incorrect
   + [ ] Add, lacking errors show
+
+
+
 
 # Sales
 ## Form fields

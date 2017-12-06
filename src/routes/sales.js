@@ -1,30 +1,29 @@
-import Purchases from '../controllers/Purchases';
+import SalesController from '../controllers/Sales';
 
-const controller = new Purchases();
+const controller = new SalesController();
 
 export default (server) => {
   server.route({
     method: 'GET',
-    path: '/purchases',
+    path: '/sales',
     handler: async (req, res) => {
-      const purchases = await controller.getAll();
+      const sales = await controller.getAll();
       return res({
         code: 200,
-        body: purchases,
+        body: sales,
       });
     },
   });
 
   server.route({
     method: 'POST',
-    path: '/purchases',
+    path: '/sales',
     handler: async (req, res) => {
-      const purchase = await controller.create(req.payload);
+      const sale = await controller.create(req.payload);
       return res({
         code: 201,
-        body: purchase,
+        body: sale,
       });
     },
   });
 };
-

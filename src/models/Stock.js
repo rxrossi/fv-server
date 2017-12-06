@@ -11,16 +11,16 @@ const stockSchema = Schema({
   date: { type: Date, required: true },
 });
 
-stockSchema.virtual('id').get(function(){
-    return this._id.toHexString();
+stockSchema.virtual('id').get(function () {
+  return this._id.toHexString();
 });
 
 stockSchema.set('toJSON', {
-    virtuals: true
+  virtuals: true,
 });
 
 stockSchema.set('toObject', {
-    virtuals: true
+  virtuals: true,
 });
 
 export default mongoose.model('Stock', stockSchema);
