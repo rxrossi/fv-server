@@ -213,27 +213,24 @@ describe('Sales routes', () => {
   });
 
   describe('POST route', () => {
-    it('records a POST request on database', async () => {
+    it.only('records a POST request on database', async () => {
       const postBody = {
         name: 'service one',
         client: client1._id,
         professional: professional1._id,
-        start_time: '10 10 2017 12:00',
-        end_time: '10 10 2017 16:00',
-        payment: {
-          value_total: 300,
-          method: 'money',
-        },
-        stockEntries: [
+        date: '2017-12-07',
+        start_time: '12:00',
+        end_time: '16:00',
+        payment_method: 'Money',
+        value: 300,
+        products: [
           {
             qty: 250,
             product: ox._id,
-            price: purchase1.stockEntries[0].price / 2, // because it is using half
           },
           {
             qty: 500,
             product: shampoo._id,
-            price: purchase1.stockEntries[1].price / 2, // because it is using half
           },
         ],
       };
@@ -243,7 +240,8 @@ describe('Sales routes', () => {
         body: JSON.stringify(postBody),
       }).then(res => res.json());
 
-      // console.log(response.body);
+      console.log(response);
+      expect(response.code).toBe(201);
 
       const joiGetBody = Joi.object().keys({
         _id: Joi.string(),

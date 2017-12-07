@@ -7,10 +7,20 @@ class ProductsController {
     return Product
       .find({})
       .populate('stock')
-      .then(products=> products.map(product => product.toObject()))
-      .then(products=> products.map(product => addPrice(product)))
-      .then(products=> products.map(product => addQuantity(product)))
-      .then(products=> products.map(product => addAvgPriceFiveLast(product)))
+      .then(products => products.map(product => product.toObject()))
+      .then(products => products.map(product => addPrice(product)))
+      .then(products => products.map(product => addQuantity(product)))
+      .then(products => products.map(product => addAvgPriceFiveLast(product)));
+  }
+
+  getOne(id) {
+    return Product
+      .findById(id)
+      .populate('stock')
+      .then(product => product.toObject())
+      .then(product => addPrice(product))
+      .then(product => addQuantity(product))
+      .then(product => addAvgPriceFiveLast(product));
   }
 
   async create(product) {
@@ -18,7 +28,7 @@ class ProductsController {
     const errors = {};
 
     const validMeasureUnits = [
-      "ml", "unit", "mg"
+      'ml', 'unit', 'mg',
     ];
 
     if (!validMeasureUnits.includes(measure_unit)) {
@@ -30,7 +40,7 @@ class ProductsController {
     }
 
     // Check if name is duplicated
-    await Product.findOne({ "name": { $regex : new RegExp(name, "i") } }, (err, product) => {
+    await Product.findOne({ name: { $regex: new RegExp(name, 'i') } }, (err, product) => {
       if (err) {
         return console.error('error when finding a product with this name');
       }
@@ -48,15 +58,14 @@ class ProductsController {
       await product.save();
 
       return {
-       product
+        product,
       };
     }
 
     return {
-      errors
+      errors,
     };
   }
-
 }
 
-export default ProductsController
+export default ProductsController;

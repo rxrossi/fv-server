@@ -55,14 +55,17 @@ class Sales {
       professional,
       start_time,
       end_time,
-      payment,
-      stockEntries,
+      date,
+      payment_method,
+      value,
+      products,
     } = postBody;
 
-    const newPayment = {
-      ...payment,
-      value_liquid: payment.value_total,
-      avaiable_at: start_time,
+    const paymentFullInfo = {
+      value_liquid: value,
+      value_total: value,
+      method: payment_method,
+      avaiable_at: date,
       discount: 'none',
     };
 
@@ -70,20 +73,20 @@ class Sales {
       name,
       client,
       professional,
-      start_time,
-      end_time,
-      payment: newPayment,
+      start_time: Number(start_time.replace(':', '')),
+      end_time: Number(end_time.replace(':', '')),
+      date,
+      payment: paymentFullInfo,
     });
 
     const { id: sale_id } = await sale.save();
 
-    await stockEntries.map(async (item) => {
+    await products.map(async (item) => {
       await stock.create({
         qty: item.qty,
         product: item.product,
-        price: item.price,
         sale: sale_id,
-        date: postBody.start_time,
+        date,
       });
     });
 
