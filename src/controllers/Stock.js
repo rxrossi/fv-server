@@ -11,33 +11,25 @@ export default class StockController {
   }
 
   async create(postBody) {
-    let price;
-    console.log({ postBody });
+    let price_per_unit;
     if (postBody.sale) { // Means it is a sale
-      const product = await products.getOne(postBody.product);
-      price = product.price;
-      console.log(product, price);
+      const productBeingSold = await products.getOne(postBody.product);
+      price_per_unit = productBeingSold.price_per_unit;
     } else {
-      price = postBody.price;
+      price_per_unit = postBody.total_price / postBody.qty;
     }
-
-    return '';
 
     const entry = new Stock({
       product: postBody.product,
       purchase: postBody.purchase,
       sale: postBody.sale,
       qty: postBody.qty,
-      price,
-      date: Date.now(),
+      price_per_unit,
+      date: postBody.date,
     });
 
-    return entry.save((err, entry) => {
-      if (err) {
-        console.error('Could not save stock entry', err);
-      }
-      // console.log('saved', entry);
-      return entry;
-    });
+    await entry.save();
+
+    return entry;
   }
 }

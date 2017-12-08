@@ -8,8 +8,8 @@ const salesSchema = Schema({
   name: { type: String, required: true },
   client: { type: Schema.Types.ObjectId, ref: 'Client' },
   professional: { type: Schema.Types.ObjectId, ref: 'Professional' },
-  start_time: { type: Number, required: true },
-  end_time: { type: Number, required: true },
+  start_time: { type: String, required: true },
+  end_time: { type: String, required: true },
   date: { type: Date, required: true },
   payment: {
     value_total: { type: Number, required: true },

@@ -25,11 +25,11 @@ export default class Purchases {
         product: item.id,
         purchase: purchase_id,
         qty: item.qty,
-        price: item.price,
+        total_price: item.total_price,
         date,
       });
     });
-
+    const stockItems = await stock.getAll();
     return this.getOne(purchase_id);
   }
 

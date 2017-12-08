@@ -1,5 +1,4 @@
 import Product, { addPrice, addQuantity, addAvgPriceFiveLast } from '../models/Products';
-import Stock from '../models/Stock';
 import { NOT_UNIQUE, BLANK, INVALID } from '../errors';
 
 class ProductsController {

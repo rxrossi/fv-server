@@ -7,7 +7,7 @@ const stockSchema = Schema({
   sale: { type: Schema.Types.ObjectId, ref: 'Sales' },
   purchase: { type: Schema.Types.ObjectId, ref: 'Purchase' },
   qty: { type: Number, required: true },
-  price: { type: Number, required: true },
+  price_per_unit: { type: Number, required: true },
   date: { type: Date, required: true },
 });
 

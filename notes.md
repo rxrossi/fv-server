@@ -17,11 +17,13 @@ Next steps, server side
 + [X] Failed prop type: The prop `purchases[0].stockEntries[0].id` is marked as required in `View`, but its value is `undefined`
 + [X]  Each child in an array or iterator should have a unique "key" prop. in ViewOne
 
+# MAJOR IMPORTANCE
++ [ ] Client side purchase price is currently for total only, this is not clear on interface and it could make hard in case user prefer to enter the unitary value, sever should always receive the total price, client side show make the conversion as necessary
+
 Then, client side
 + [ ] Write the sales feature
   + [ ] the format of products is incorrect
   + [ ] Add, lacking errors show
-
 
 # Bugs
 

@@ -5,7 +5,7 @@ const stock = new StockController();
 
 function calcProfit(sale) {
   const costOfProducts = sale.stockEntries
-    .reduce((prevVal, entry) => prevVal + entry.price, 0);
+    .reduce((prevVal, entry) => prevVal + (entry.price_per_unit * entry.qty), 0);
 
   return {
     ...sale,
@@ -24,7 +24,6 @@ class Sales {
         path: 'stockEntries',
         populate: {
           path: 'product',
-          select: 'name measure_unit',
         },
       })
       .populate('client')
@@ -39,7 +38,6 @@ class Sales {
         path: 'stockEntries',
         populate: {
           path: 'product',
-          select: 'name measure_unit',
         },
       })
       .populate('client')
@@ -73,22 +71,23 @@ class Sales {
       name,
       client,
       professional,
-      start_time: Number(start_time.replace(':', '')),
-      end_time: Number(end_time.replace(':', '')),
+      start_time,
+      end_time,
       date,
       payment: paymentFullInfo,
     });
 
     const { id: sale_id } = await sale.save();
 
-    await products.map(async (item) => {
-      await stock.create({
+    products.map(item =>
+      stock.create({
         qty: item.qty,
         product: item.product,
         sale: sale_id,
         date,
-      });
-    });
+      }));
+    await stock.getAll(); // ungly hack because the map for stock.create()
+    // is not being waited to be completed without it
 
     return this.getOne(sale_id);
   }
