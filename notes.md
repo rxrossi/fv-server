@@ -1,35 +1,7 @@
-Next steps, server side
-+ [X] Move the subdocument stock from products to is own Model, reference in on products
-  + [X] Create a working controller for get all that populates stock entries
-  + [X] Make the virtuals work
-+ [X] Make Products integration tests work
-  + [X] Fix the issue with products route test
-+ [X] Make Purchases integration tests work
-+ [X] extract configure server from index, it makes the test to not work correctly with jest watch
-
-+ [X] Purchases View needs to have a link to view one
-+ [X] purchases has purchase.products, it should be purchase.stockEntries
-+ [X] Implement Purchases View One
-
-+ [X] Client complains about professional.id not existing
-+ [X] Client complains about `purchases[0].products[0].id` is marked as required in `View`, but its value is `undefined`. 
-+ [X] product ViewOne  Warning: Each child in an array or iterator should have a unique "key" prop.
-+ [X] Failed prop type: The prop `purchases[0].stockEntries[0].id` is marked as required in `View`, but its value is `undefined`
-+ [X]  Each child in an array or iterator should have a unique "key" prop. in ViewOne
-
-Then, client side
-+ [ ] Write the sales feature
-  + [ ] Add, lacking errors show
-
-# Bugs
-
-+ [ ] submiting a purchase does not clear the form
++ [ ] Products
 + [ ] doing a purchase with invalid date does not show any error
-+ [ ] sales does not work, probably a error with submit
 + [ ] sales on server side don't really calculate the cost of credit card
-+ [ ] Submiting a sale does not add the answer to the redux store
 + [ ] Gotta be a way to check if a product has stock, if does not have it yet, probably should not be able to sell it (use on sale)
-+ [ ] Seems like sale is not really adding products
 
 
 
