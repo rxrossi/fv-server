@@ -1,7 +1,7 @@
 import 'isomorphic-fetch'; /* global fetch */
 import Joi from 'joi';
 import PurchasesModel from '../../models/Purchases';
-import SaleModel from '../../models/Sales';
+import SalesModel from '../../models/Sales';
 import StockModel from '../../models/Stock';
 import ProductModel from '../../models/Products';
 import PurchasesController from '../../controllers/Purchases';
@@ -33,11 +33,12 @@ describe('Sales routes', () => {
         return sv;
       });
 
-    PurchasesModel.deleteMany({}, genericErrorHandler);
-    ProductModel.deleteMany({}, genericErrorHandler);
-    ClientModel.deleteMany({}, genericErrorHandler);
-    ProfessionalModel.deleteMany({}, genericErrorHandler);
-    StockModel.deleteMany({}, genericErrorHandler);
+    await PurchasesModel.deleteMany({}, genericErrorHandler);
+    await ProductModel.deleteMany({}, genericErrorHandler);
+    await ClientModel.deleteMany({}, genericErrorHandler);
+    await ProfessionalModel.deleteMany({}, genericErrorHandler);
+    await StockModel.deleteMany({}, genericErrorHandler);
+    await SalesModel.deleteMany({}, genericErrorHandler);
 
     client1 = new ClientModel({ name: 'Mary', phone: '999' });
     client1.save();
@@ -66,11 +67,11 @@ describe('Sales routes', () => {
   });
 
   afterEach(async () => { // stoping server
-    SaleModel.deleteMany({}, genericErrorHandler);
-    ProductModel.deleteMany({}, genericErrorHandler);
-    ProfessionalModel.deleteMany({}, genericErrorHandler);
-    ClientModel.deleteMany({}, genericErrorHandler);
-    StockModel.deleteMany({}, genericErrorHandler);
+    await SalesModel.deleteMany({}, genericErrorHandler);
+    await ProductModel.deleteMany({}, genericErrorHandler);
+    await ProfessionalModel.deleteMany({}, genericErrorHandler);
+    await ClientModel.deleteMany({}, genericErrorHandler);
+    await StockModel.deleteMany({}, genericErrorHandler);
 
     await server.stop();
   });
@@ -152,12 +153,9 @@ describe('Sales routes', () => {
         __v: Joi.number(),
         date: Joi.string(),
         sale: Joi.string(),
-        qty: 250,
+        qty: Joi.number(),
         price_per_unit: Joi.number(),
-        product: {
-          ...ox.toObject(),
-          _id: Joi.string(),
-        },
+        product: Joi.object(),
       });
       Joi.assert(firstSale.stockEntries[0], stockEntryOneSchema);
     });
@@ -165,6 +163,9 @@ describe('Sales routes', () => {
 
   describe('POST route', () => {
     it('records a POST request on database', async () => {
+      // await StockModel.deleteMany({}, genericErrorHandler);
+      // await PurchasesModel.deleteMany({}, genericErrorHandler);
+
       const postBody = {
         name: 'service one',
         client: client1._id,
@@ -227,29 +228,12 @@ describe('Sales routes', () => {
         __v: Joi.number(),
         date: Joi.string(),
         sale: Joi.string(),
-        qty: 250,
+        qty: Joi.number(),
         price_per_unit: Joi.number(),
-        product: {
-          ...ox.toObject(),
-          _id: Joi.string(),
-        },
+        product: Joi.object(),
       });
-      Joi.assert(response.body.stockEntries[0], stockEntryOneSchema);
 
-      const stockEntryTwoSchema = Joi.object().keys({
-        _id: Joi.string(),
-        id: Joi.string(),
-        __v: Joi.number(),
-        date: Joi.string(),
-        sale: Joi.string(),
-        qty: 500,
-        price_per_unit: Joi.number(),
-        product: {
-          ...shampoo.toObject(),
-          _id: Joi.string(),
-        },
-      });
-      Joi.assert(response.body.stockEntries[1], stockEntryTwoSchema);
+      Joi.assert(response.body.stockEntries[0], stockEntryOneSchema);
     });
   });
 });

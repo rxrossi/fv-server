@@ -1,10 +1,16 @@
-import 'isomorphic-fetch';
+import 'isomorphic-fetch'; /* global fetch */
 import Product from '../../models/Products';
+import ClientModel from '../../models/Clients';
+import ProfessionalModel from '../../models/Professionals';
+import SalesController from '../../controllers/Sales';
+import SalesModel from '../../models/Sales';
+import PurchasesController from '../../controllers/Purchases';
 import Stock from '../../controllers/Stock';
+import StockModel from '../../models/Stock';
 import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
 
-const stock = new Stock;
+const stock = new Stock();
 
 const PRODUCTS_URL = 'http://localhost:5001/products';
 let server;
@@ -16,39 +22,78 @@ describe('Products Route', () => {
         server.start();
         return server;
       });
-
   });
 
-  beforeEach((done) => {
-    Product.deleteMany({}, (err) => {
+  beforeEach(async () => {
+    await ProfessionalModel.deleteMany({}, (err) => {
       if (err) {
-        throw "Could not Product.deleteMany on DB";
+        throw 'Could not ProfessionalModel.deleteMany on DB';
       }
-      done();
-    })
+    });
+
+    await StockModel.deleteMany({}, (err) => {
+      if (err) {
+        throw 'Could not StockModel.deleteMany on DB';
+      }
+    });
+
+    await ClientModel.deleteMany({}, (err) => {
+      if (err) {
+        throw 'Could not ProfessionalModel.deleteMany on DB';
+      }
+    });
+
+    await Product.deleteMany({}, (err) => {
+      if (err) {
+        throw 'Could not Product.deleteMany on DB';
+      }
+    });
   });
 
   afterEach((done) => {
     server.stop().then(() => done());
   });
 
-  afterAll((done) => {
-    Product.deleteMany({}, (err) => {
+  beforeEach(async () => {
+    await ProfessionalModel.deleteMany({}, (err) => {
       if (err) {
-        throw "Could not Product.deleteMany on DB";
+        throw 'Could not ProfessionalModel.deleteMany on DB';
       }
-      done();
-    })
+    });
+
+    await StockModel.deleteMany({}, (err) => {
+      if (err) {
+        throw 'Could not StockModel.deleteMany on DB';
+      }
+    });
+
+    await SalesModel.deleteMany({}, (err) => {
+      if (err) {
+        throw 'Could not SalesModel.deleteMany on DB';
+      }
+    });
+
+    await ClientModel.deleteMany({}, (err) => {
+      if (err) {
+        throw 'Could not ProfessionalModel.deleteMany on DB';
+      }
+    });
+
+    await Product.deleteMany({}, (err) => {
+      if (err) {
+        throw 'Could not Product.deleteMany on DB';
+      }
+    });
   });
 
   describe('GET Route', () => {
     it('receives an empty array when no products', async () => {
       const answer = await fetch(PRODUCTS_URL)
-        .then(res => res.json())
+        .then(res => res.json());
 
       expect(answer).toEqual({
         code: 200,
-        body: []
+        body: [],
       });
     });
 
@@ -86,6 +131,7 @@ describe('Products Route', () => {
       await Product.collection.insert(productsList, (err) => {
         if (err) {
           console.log(err);
+          console.log(err);
         }
       });
 
@@ -102,61 +148,71 @@ describe('Products Route', () => {
     });
 
     it('sends a a list of products with valid stock when entries exist', async () => {
+      const ox = new Product({ name: 'OX', measure_unit: 'ml' });
+      ox.save();
 
-      const product = { name: 'OX', measure_unit: 'ml' };
+      const client1 = new ClientModel({ name: 'Mary', phone: '999' });
+      client1.save();
 
-      await Product.collection.insert([product], (err) => {
-        if (err) {
-          console.log(err);
-        }
-      });
+      const professional1 = new ProfessionalModel({ name: 'Carl' });
+      professional1.save();
 
-      const ox = await Product.findOne({ name: 'OX' })
+      const purchase = {
+        products: [
+          { id: ox._id, qty: 1000, total_price: 100 },
+        ],
+        seller: 'Company one',
+        date: Date.now(),
+      };
 
-      const entries = [
-        {
-          product: ox.id,
-          qty: -3,
-          price: 1,
-          date: '10 25 2017',
-        },
-        {
-          product: ox.id,
-          qty: 10,
-          price: 2,
-          date: '10 24 2017',
-        },
-      ];
+      const purchasesController = new PurchasesController();
+      await purchasesController.create(purchase);
 
-      await stock.create(entries[0]);
-      await stock.create(entries[1]);
+      const sale = {
+        name: 'service one',
+        client: client1._id,
+        professional: professional1._id,
+        date: '2017-12-07',
+        start_time: '12:00',
+        end_time: '16:00',
+        payment_method: 'money',
+        value: 300,
+        products: [
+          {
+            qty: 100,
+            product: ox._id,
+          },
+        ],
+      };
+      const saleController = new SalesController();
+      await saleController.create(sale);
+      const stockController = new Stock();
+      const stockEntries = await stockController.getAll();
 
       const answer = await fetch(PRODUCTS_URL)
         .then(res => res.json());
 
       expect(answer.code).toEqual(200);
       expect(answer.body.length).toEqual(1);
-      expect(answer.body[0].name).toEqual(product.name);
+      expect(answer.body[0].name).toEqual(ox.name);
 
-      expect(answer.body[0].quantity).toEqual(7);
-      expect(answer.body[0].price).toEqual(2);
-      expect(answer.body[0].avgPriceFiveLast).toEqual(2);
+      expect(answer.body[0].quantity).toEqual(900);
+      expect(answer.body[0].price_per_unit).toEqual(0.1);
+      expect(answer.body[0].avgPriceFiveLast).toEqual(0.1);
 
-      expect(answer.body[0].stock[0].qty).toEqual(entries[0].qty);
-      expect(answer.body[0].stock[0].price).toEqual(entries[0].price);
-      expect(answer.body[0].stock[0].sourceOrDestination).toEqual(entries[0].sourceOrDestination);
+      expect(answer.body[0].stock[0].qty).toEqual(purchase.products[0].qty);
+      expect(answer.body[0].stock[0].price_per_unit)
+        .toEqual(purchase.products[0].total_price / purchase.products[0].qty);
 
-      expect(answer.body[0].stock[1].qty).toEqual(entries[1].qty);
-      expect(answer.body[0].stock[1].price).toEqual(entries[1].price);
-      expect(answer.body[0].stock[1].sourceOrDestination).toEqual(entries[1].sourceOrDestination);
+      expect(answer.body[0].stock[1].qty).toEqual(sale.products[0].qty);
+      expect(answer.body[0].stock[1].price_per_unit)
+        .toEqual(0.1);
     });
   });
 
   describe('POST Route', () => {
     it('Can post a product', async () => {
-      const beforeList = await Product.find((err, products) => {
-        return products;
-      });
+      const beforeList = await Product.find((err, products) => products);
       expect(beforeList.length).toBe(0);
 
       const productExample = {
@@ -169,20 +225,16 @@ describe('Products Route', () => {
         body: JSON.stringify(productExample),
       }).then(res => res.json());
 
-      const afterList = await Product.find((err, products) => {
-        return products;
-      });
+      const afterList = await Product.find((err, products) => products);
       expect(afterList.length).toBe(1);
       expect(afterList[0].name).toEqual(productExample.name);
 
-      expect(res.code).toEqual(201); //201 means created
+      expect(res.code).toEqual(201); // 201 means created
       expect(res.body.name).toEqual(productExample.name);
     });
 
     it('Can\'t post a product with the same name of a previous product', async () => {
-      const beforeList = await Product.find((err, products) => {
-        return products;
-      });
+      const beforeList = await Product.find((err, products) => products);
       expect(beforeList.length).toBe(0);
 
       const productExample = {
@@ -193,7 +245,7 @@ describe('Products Route', () => {
       const res1 = await fetch(PRODUCTS_URL, {
         method: 'POST',
         body: JSON.stringify(productExample),
-      }).then(res => res.json())
+      }).then(res => res.json());
 
       const res2 = await fetch(PRODUCTS_URL, {
         method: 'POST',
@@ -201,9 +253,7 @@ describe('Products Route', () => {
       }).then(res => res.json());
 
 
-      const afterList = await Product.find((err, products) => {
-        return products;
-      });
+      const afterList = await Product.find((err, products) => products);
 
       expect(afterList.length).toBe(1);
       expect(afterList[0].name).toEqual(productExample.name);
@@ -219,7 +269,6 @@ describe('Products Route', () => {
           name: NOT_UNIQUE,
         },
       });
-
     });
-  })
+  });
 });

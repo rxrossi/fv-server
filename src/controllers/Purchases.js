@@ -7,7 +7,7 @@ const stock = new StockController();
 function addPriceToPurchases(purchases) {
   return purchases.map(purchase => ({
     ...purchase,
-    price: purchase.stockEntries.reduce((prev, entry) => prev + entry.price, 0),
+    price: purchase.stockEntries.reduce((prev, entry) => prev + (entry.price_per_unit * entry.qty), 0),
   }));
 }
 

@@ -12,7 +12,7 @@ describe('Purchases Controller', () => {
   beforeEach((done) => {
     mongoose.Promise = global.Promise;
     mongoose.connect('mongodb://localhost/fv', { useMongoClient: true })
-      .then(() => done())
+      .then(() => done());
   });
 
   beforeEach((done) => {
@@ -77,7 +77,7 @@ describe('Purchases Controller', () => {
 
   describe('With no entries yet', () => {
     let ox;
-    let shampoo
+    let shampoo;
     beforeEach((done) => {
       ox = new ProductModel({ name: 'OX', measure_unit: 'ml' });
       ox.save((err, product) => {
@@ -100,13 +100,13 @@ describe('Purchases Controller', () => {
       // Prepare
       const postBody = {
         products: [
-          { id: ox._id, qty: 500, price: 90 },
-          { id: ox._id, qty: 1000, price: 40 },
+          { id: ox._id, qty: 500, total_price: 90 },
+          { id: ox._id, qty: 1000, total_price: 40 },
         ],
         seller: 'Company one',
         date: Date.now(),
-      }
-      const sut = new PurchasesController;
+      };
+      const sut = new PurchasesController();
 
       // Act
       await sut.create(postBody);
@@ -115,7 +115,7 @@ describe('Purchases Controller', () => {
       const purchases = await PurchasesModel.find({}).populate('stockEntries');
 
       expect(purchases[0].stockEntries.length).toBe(2);
-      expect(purchases[0].seller).toEqual("Company one");
+      expect(purchases[0].seller).toEqual('Company one');
       expect(purchases[0].stockEntries[0].qty).toEqual(500);
     });
 
@@ -123,14 +123,14 @@ describe('Purchases Controller', () => {
       // Prepare
       const postBody = {
         products: [
-          { id: ox._id, qty: 500, price: 90 },
-          { id: shampoo._id, qty: 1000, price: 40 },
+          { id: ox._id, qty: 500, total_price: 90 },
+          { id: shampoo._id, qty: 1000, total_price: 40 },
         ],
         seller: 'Company one',
         date: Date.now(),
       };
 
-      const sut = new PurchasesController;
+      const sut = new PurchasesController();
       await sut.create(postBody);
 
       // Act

@@ -8,7 +8,7 @@ describe('ProductsController', () => {
   beforeEach((done) => {
     mongoose.Promise = global.Promise;
     mongoose.connect('mongodb://localhost/fv', { useMongoClient: true })
-      .then(() => done())
+      .then(() => done());
   });
 
   beforeEach((done) => {
@@ -63,23 +63,23 @@ describe('ProductsController', () => {
         product: product._id,
         date: '10 27 2017',
         qty: 1,
-        price: 10,
+        price_per_unit: 10,
       });
 
-      entryOne.save((err, entry) => {
-        if (err) {
-          console.error('entry', err);
+      entryOne.save((error) => {
+        if (error) {
+          console.error('entry', error);
         }
       });
     });
 
-    sut = new ProductsController;
+    sut = new ProductsController();
 
     // Act
     const products = await sut.getAll();
 
     // Assert
-    expect(products[0].price).toBe(10);
+    expect(products[0].price_per_unit).toBe(10);
     expect(products[0].quantity).toBe(1);
     expect(products[0].avgPriceFiveLast).toBe(10);
   });
@@ -87,7 +87,7 @@ describe('ProductsController', () => {
   it('creates a product', async () => {
     const ox = { name: 'OX', measure_unit: 'ml' };
 
-    sut = new ProductsController;
+    sut = new ProductsController();
 
     const { product, errors } = await sut.create(ox);
 
@@ -97,7 +97,7 @@ describe('ProductsController', () => {
   it('cannot create a product with duplicated name', async () => {
     const ox = { name: 'OX', measure_unit: 'ml' };
 
-    sut = new ProductsController;
+    sut = new ProductsController();
 
     await sut.create(ox);
     const { product, errors } = await sut.create(ox);

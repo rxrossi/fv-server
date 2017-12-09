@@ -17,7 +17,10 @@ export function addPrice(product) {
 export function addQuantity(product) {
   return {
     ...product,
-    quantity: product.stock.reduce((prev, { qty }) => qty + prev, 0),
+    quantity: product.stock.reduce((prev, { qty, sale }) => {
+      const positiveOrNegativeQuantity = sale ? qty * -1 : qty;
+      return positiveOrNegativeQuantity + prev;
+    }, 0),
   };
 }
 
@@ -36,7 +39,7 @@ export function addAvgPriceFiveLast(product) {
   const countOfPrices = fiveLastPurchases.length;
 
   const avgPrice = fiveLastPurchases
-    .reduce((prev, { price }) => prev + price, 0) / countOfPrices;
+    .reduce((prev, { price_per_unit }) => prev + price_per_unit, 0) / countOfPrices;
 
   return {
     ...product,

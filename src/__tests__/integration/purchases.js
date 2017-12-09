@@ -1,6 +1,7 @@
 import 'isomorphic-fetch'; /* global fetch */
 import PurchasesModel from '../../models/Purchases';
 import ProductModel from '../../models/Products';
+import StockModel from '../../models/Stock';
 import PurchasesController from '../../controllers/Purchases';
 import configureServer from '../../configureServer';
 
@@ -25,6 +26,7 @@ describe('Purchases Route', () => {
       });
 
     await PurchasesModel.deleteMany({}, genericErrorHandler);
+    await StockModel.deleteMany({}, genericErrorHandler);
     await ProductModel.deleteMany({}, genericErrorHandler);
 
     ox = new ProductModel({ name: 'OX', measure_unit: 'ml' });
@@ -53,8 +55,8 @@ describe('Purchases Route', () => {
       // Prepare
       const postBody = {
         products: [
-          { id: ox._id, qty: 500, price: 90 },
-          { id: ox._id, qty: 1000, price: 40 },
+          { id: ox._id, qty: 500, total_price: 90 },
+          { id: ox._id, qty: 1000, total_price: 40 },
         ],
         seller: 'Company one',
         date: Date.now(),
@@ -79,8 +81,8 @@ describe('Purchases Route', () => {
 
       const postBody = {
         products: [
-          { id: ox._id, qty: 500, price: 90 },
-          { id: ox._id, qty: 1000, price: 40 },
+          { id: ox._id, qty: 500, total_price: 90 },
+          { id: ox._id, qty: 1000, total_price: 40 },
         ],
         seller: 'Company one',
         date: Date.now(),
@@ -91,6 +93,7 @@ describe('Purchases Route', () => {
         body: JSON.stringify(postBody),
       }).then(resp => resp.json());
 
+      // console.log(res.body);
       expect(res.code).toEqual(201); // 201 means created
       expect(res.body.seller).toEqual('Company one');
       expect(res.body.price).toEqual(130);

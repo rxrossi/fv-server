@@ -1,4 +1,4 @@
-import 'isomorphic-fetch';
+import 'isomorphic-fetch'; /* global fetch */
 import Client from '../../models/Clients';
 import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
@@ -16,10 +16,10 @@ describe('Clients Route', () => {
 
     await Client.deleteMany({}, (err) => {
       if (err) {
-        throw "Could not Client.deleteMany on DB";
+        throw 'Could not Client.deleteMany on DB';
       }
       return true;
-    })
+    });
   });
 
   afterEach((done) => {
@@ -29,11 +29,11 @@ describe('Clients Route', () => {
   describe('GET Route', () => {
     it('receives an empty array when no clients', async () => {
       const answer = await fetch(CLIENTS_URL)
-        .then(res => res.json())
+        .then(res => res.json());
 
       expect(answer).toEqual({
         code: 200,
-        body: []
+        body: [],
       });
     });
 
@@ -60,9 +60,7 @@ describe('Clients Route', () => {
 
   describe('POST Route', () => {
     it('Can post a client', async () => {
-      const beforeList = await Client.find((err, clients) => {
-        return clients;
-      });
+      const beforeList = await Client.find((err, clients) => clients);
       expect(beforeList.length).toBe(0);
 
       const john = {
@@ -75,20 +73,16 @@ describe('Clients Route', () => {
         body: JSON.stringify(john),
       }).then(res => res.json());
 
-      const afterList = await Client.find((err, clients) => {
-        return clients;
-      });
+      const afterList = await Client.find((err, clients) => clients);
       expect(afterList.length).toBe(1);
       expect(afterList[0].name).toEqual(john.name);
 
-      expect(res.code).toEqual(201); //201 means created
+      expect(res.code).toEqual(201); // 201 means created
       expect(res.body.name).toEqual(john.name);
     });
 
     it('Can\'t post a client with the same name of a previous client', async () => {
-      const beforeList = await Client.find((err, clients) => {
-        return clients;
-      });
+      const beforeList = await Client.find((err, clients) => clients);
       expect(beforeList.length).toBe(0);
 
       const john = {
@@ -99,7 +93,7 @@ describe('Clients Route', () => {
       const res1 = await fetch(CLIENTS_URL, {
         method: 'POST',
         body: JSON.stringify(john),
-      }).then(res => res.json())
+      }).then(res => res.json());
 
       const res2 = await fetch(CLIENTS_URL, {
         method: 'POST',
@@ -107,9 +101,7 @@ describe('Clients Route', () => {
       }).then(res => res.json());
 
 
-      const afterList = await Client.find((err, clients) => {
-        return clients;
-      });
+      const afterList = await Client.find((err, clients) => clients);
 
       expect(afterList.length).toBe(1);
       expect(afterList[0].name).toEqual(john.name);
@@ -125,7 +117,6 @@ describe('Clients Route', () => {
           name: NOT_UNIQUE,
         },
       });
-
     });
   });
 });

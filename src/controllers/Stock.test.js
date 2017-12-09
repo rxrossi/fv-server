@@ -4,7 +4,7 @@ import StockController from './Stock';
 import ProductModel from '../models/Products';
 import StockModel from '../models/Stock';
 
-describe.skip('ProductsController', () => {
+describe('StockController', () => {
   let sut;
 
   beforeEach((done) => {
@@ -67,10 +67,10 @@ describe.skip('ProductsController', () => {
           product: product._id,
           date: '10 27 2017',
           qty: 1,
-          price: 10,
+          price_per_unit: 10,
         });
 
-        entryOne.save((err, entry) => {
+        entryOne.save((err) => {
           if (err) {
             console.error('entry', err);
           }
@@ -88,7 +88,7 @@ describe.skip('ProductsController', () => {
 
       // Assert
       expect(answer[0].qty).toBe(1);
-      expect(answer[0].price).toBe(10);
+      expect(answer[0].price_per_unit).toBe(10);
       expect(answer[0].product.name).toBe(ox.name);
       expect(answer[0].product.measure_unit).toBe(ox.measure_unit);
     });
@@ -113,7 +113,8 @@ describe.skip('ProductsController', () => {
       const postBody = {
         product: productId,
         qty: 4,
-        price: 12,
+        total_price: 12,
+        date: '10 10 2017',
       };
 
       const sut = new StockController();

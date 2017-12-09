@@ -17,12 +17,8 @@ Next steps, server side
 + [X] Failed prop type: The prop `purchases[0].stockEntries[0].id` is marked as required in `View`, but its value is `undefined`
 + [X]  Each child in an array or iterator should have a unique "key" prop. in ViewOne
 
-# MAJOR IMPORTANCE
-+ [ ] Client side purchase price is currently for total only, this is not clear on interface and it could make hard in case user prefer to enter the unitary value, sever should always receive the total price, client side show make the conversion as necessary
-
 Then, client side
 + [ ] Write the sales feature
-  + [ ] the format of products is incorrect
   + [ ] Add, lacking errors show
 
 # Bugs
@@ -31,7 +27,9 @@ Then, client side
 + [ ] doing a purchase with invalid date does not show any error
 + [ ] sales does not work, probably a error with submit
 + [ ] sales on server side don't really calculate the cost of credit card
-+ [ ]
++ [ ] Submiting a sale does not add the answer to the redux store
++ [ ] Gotta be a way to check if a product has stock, if does not have it yet, probably should not be able to sell it (use on sale)
++ [ ] Seems like sale is not really adding products
 
 
 
