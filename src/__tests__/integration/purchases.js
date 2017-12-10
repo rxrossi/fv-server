@@ -4,6 +4,7 @@ import ProductModel from '../../models/Products';
 import StockModel from '../../models/Stock';
 import PurchasesController from '../../controllers/Purchases';
 import configureServer from '../../configureServer';
+import { NOT_UNIQUE, BLANK, INVALID, NOT_POSITIVE } from '../../errors';
 
 const PURCHASES_URL = 'http://localhost:5001/purchases';
 let server;
@@ -99,6 +100,42 @@ describe('Purchases Route', () => {
       expect(res.body.price).toEqual(130);
       expect(typeof res.body.stockEntries[0].id).toEqual('string');
       expect(res.body.stockEntries[0].product.name).toEqual(ox.name);
+    });
+
+    it('responds with errors in case there is', async () => {
+      const postBody = {
+        products: [
+          { id: undefined, qty: undefined, total_price: 0 },
+          { id: ox._id, qty: 1000, total_price: undefined },
+        ],
+        seller: undefined,
+        date: '',
+      };
+
+      const expectedErrors = {
+        seller: BLANK,
+        date: BLANK,
+        products: [
+          {
+            id: BLANK,
+            qty: NOT_POSITIVE,
+            total_price: NOT_POSITIVE,
+          },
+          {
+            id: undefined,
+            qty: undefined,
+            total_price: NOT_POSITIVE,
+          },
+        ],
+      };
+
+      const res = await fetch(PURCHASES_URL, {
+        method: 'POST',
+        body: JSON.stringify(postBody),
+      }).then(resp => resp.json());
+
+      expect(res.code).toEqual(422);
+      expect(res.errors).toEqual(expectedErrors);
     });
   });
 

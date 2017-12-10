@@ -19,7 +19,14 @@ export default (server) => {
     method: 'POST',
     path: '/purchases',
     handler: async (req, res) => {
-      const purchase = await controller.create(req.payload);
+      const { purchase, errors } = await controller.create(req.payload);
+      if (errors) {
+        return res({
+          code: 422, // 409 is conflict
+          errors,
+        });
+      }
+
       return res({
         code: 201,
         body: purchase,

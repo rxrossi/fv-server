@@ -1,27 +1,25 @@
-+ [ ] Submit Errors
-  + [ ] Sales
-    + [ ] Name is required
-    + [ ] Value is required
-    + [ ] Value needs to be > 0
-    + [ ] Payment method is Required
-    + [ ] Date is required
-    + [ ] Start time is required
-    + [ ] End time is required
-    + [ ] Professional is Required
-    + [ ] Client is required
-    + [ ] Products
-      + [ ] Name is required
-      + [ ] Qty is required
-      + [ ] Qty needs to be > 0
-  + [ ] Purchases
-    + [ ] Provider is required
-    + [ ] Date is required
-    + [ ] Products
-      + [ ] Name is required (select)
-      + [ ] Value is required 
-      + [ ] Value need to be > 0
-      + [ ] Qty is required
-      + [ ] Qty need to be > 0
++ [X] Submit Errors
+  + [X] Sales
+    + [X] Name is required
+    + [X] Value needs to be > 0
+    + [X] Payment method is Required
+    + [X] Date is required
+    + [X] Start time is required
+    + [X] End time is required
+    + [X] Professional is Required
+    + [X] Client is required
+    + [X] Products
+      + [X] Name is required
+      + [X] Qty needs to be > 0
+  + [X] Purchases
+    + [X] Seller is required
+    + [X] Date is required
+    + [X] Products
+      + [X] Name is required (select)
+      + [X] Value is required 
+      + [X] Value need to be > 0
+      + [X] Qty is required
+      + [X] Qty need to be > 0
 
 + [ ] Products view one does not list price or sourceOrDestination
 + [ ] Products view does not show price 

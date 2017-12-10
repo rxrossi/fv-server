@@ -1,5 +1,6 @@
 import SalesModel from '../models/Sales';
 import StockController from '../controllers/Stock';
+import { BLANK, NOT_POSITIVE } from '../errors';
 
 const stock = new StockController();
 
@@ -59,6 +60,64 @@ class Sales {
       products,
     } = postBody;
 
+    // error cheching
+    const errors = {};
+    // for name
+    if (!name) {
+      errors.name = BLANK;
+    }
+    // client
+    if (!client) {
+      errors.client = BLANK;
+    }
+    // professional
+    if (!client) {
+      errors.professional = BLANK;
+    }
+    // date
+    if (!date) {
+      errors.date = BLANK;
+    }
+    // start_time
+    if (!start_time) {
+      errors.start_time = BLANK;
+    }
+    // end_time
+    if (!end_time) {
+      errors.end_time = BLANK;
+    }
+    // payment_method
+    if (!payment_method) {
+      errors.payment_method = BLANK;
+    }
+    // value
+    if (!(value > 0)) {
+      errors.value = NOT_POSITIVE;
+    }
+
+    const errorOfProducts = [];
+    products.forEach(({ product, qty }) => {
+      const errors = {};
+      if (!product) {
+        errors.product = BLANK;
+      }
+      if (!(qty > 0)) {
+        errors.qty = NOT_POSITIVE;
+      }
+      if (Object.keys(errors).length) {
+        errorOfProducts.push(errors);
+      }
+    });
+
+    if (Object.keys(errors).length || errorOfProducts.length) {
+      return {
+        errors: {
+          ...errors,
+          products: errorOfProducts,
+        },
+      };
+    }
+
     const paymentFullInfo = {
       value_liquid: value,
       value_total: value,
@@ -89,7 +148,9 @@ class Sales {
     await stock.getAll(); // ungly hack because the map for stock.create()
     // is not being waited to be completed without it
 
-    return this.getOne(sale_id);
+    return {
+      sale: await this.getOne(sale_id),
+    };
   }
 }
 

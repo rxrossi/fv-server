@@ -70,8 +70,8 @@ describe('StockController', () => {
           price_per_unit: 10,
         });
 
-        entryOne.save((err) => {
-          if (err) {
+        entryOne.save((errEntry) => {
+          if (errEntry) {
             console.error('entry', err);
           }
           done();
@@ -81,7 +81,7 @@ describe('StockController', () => {
 
     it('return a stock entry', async () => {
       // Prepare
-      const sut = new StockController();
+      sut = new StockController();
 
       // Act
       const answer = await sut.getAll();
@@ -99,7 +99,7 @@ describe('StockController', () => {
     beforeEach((done) => {
       ox = new ProductModel({ name: 'OX', measure_unit: 'ml' });
 
-      ox.save((err, product) => {
+      ox.save((err) => {
         if (err) {
           console.error(err);
         }
@@ -117,7 +117,7 @@ describe('StockController', () => {
         date: '10 10 2017',
       };
 
-      const sut = new StockController();
+      sut = new StockController();
 
       await sut.create(postBody);
 

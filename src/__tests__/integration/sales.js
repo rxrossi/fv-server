@@ -9,6 +9,7 @@ import SalesController from '../../controllers/Sales';
 import ClientModel from '../../models/Clients';
 import ProfessionalModel from '../../models/Professionals';
 import configureServer from '../../configureServer';
+import { BLANK, NOT_POSITIVE } from '../../errors';
 
 const SALES_URL = 'http://localhost:5001/sales';
 
@@ -234,6 +235,57 @@ describe('Sales routes', () => {
       });
 
       Joi.assert(response.body.stockEntries[0], stockEntryOneSchema);
+    });
+
+    it('returns an error case it is needed', async () => {
+      const postBody = {
+        name: '',
+        client: '',
+        professional: '',
+        date: '',
+        start_time: '',
+        end_time: '',
+        payment_method: '',
+        value: '',
+        products: [
+          {
+            qty: 250,
+            product: '',
+          },
+          {
+            qty: undefined,
+            product: shampoo._id,
+          },
+        ],
+      };
+
+      const expectedErrors = {
+        name: BLANK,
+        client: BLANK,
+        professional: BLANK,
+        date: BLANK,
+        start_time: BLANK,
+        end_time: BLANK,
+        payment_method: BLANK,
+        value: NOT_POSITIVE,
+        products: [
+          {
+            product: BLANK,
+          },
+          {
+            qty: NOT_POSITIVE,
+          },
+        ],
+      };
+
+      const response = await fetch(SALES_URL, {
+        method: 'POST',
+        body: JSON.stringify(postBody),
+      }).then(res => res.json());
+
+      expect(response.errors).toEqual(expectedErrors);
+
+      expect(response.code).toBe(422);
     });
   });
 });

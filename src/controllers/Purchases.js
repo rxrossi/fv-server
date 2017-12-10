@@ -1,6 +1,7 @@
 import PurchasesModel from '../models/Purchases';
 import Products from '../models/Products';
 import StockController from '../controllers/Stock';
+import { NOT_UNIQUE, BLANK, INVALID, NOT_POSITIVE } from '../errors';
 
 const stock = new StockController();
 
@@ -13,10 +14,48 @@ function addPriceToPurchases(purchases) {
 
 export default class Purchases {
   async create({ date, seller, products }) {
+    const errors = {};
     const purchase = new PurchasesModel({
       date,
       seller,
     });
+
+    // error cheching
+    // for seller
+    if (!seller) {
+      errors.seller = BLANK;
+    }
+    // date
+    if (!date) {
+      errors.date = BLANK;
+    }
+
+    const errorOfProducts = [];
+    products.forEach(({ id, qty, total_price }) => {
+      const errors = {};
+      if (!id) {
+        errors.id = BLANK;
+      }
+      if (!(qty > 0)) {
+        errors.qty = NOT_POSITIVE;
+      }
+      if (!(total_price > 0)) {
+        errors.total_price = NOT_POSITIVE;
+      }
+
+      if (Object.keys(errors).length) {
+        errorOfProducts.push(errors);
+      }
+    });
+
+    if (Object.keys(errors).length || errorOfProducts.length) {
+      return {
+        errors: {
+          ...errors,
+          products: errorOfProducts,
+        },
+      };
+    }
 
     const { id: purchase_id } = await purchase.save();
 
@@ -29,8 +68,12 @@ export default class Purchases {
         date,
       });
     });
+
     const stockItems = await stock.getAll();
-    return this.getOne(purchase_id);
+
+    return {
+      purchase: await this.getOne(purchase_id),
+    };
   }
 
   getOne(id) {

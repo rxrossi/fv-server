@@ -131,7 +131,6 @@ describe('Products Route', () => {
       await Product.collection.insert(productsList, (err) => {
         if (err) {
           console.log(err);
-          console.log(err);
         }
       });
 

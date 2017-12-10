@@ -19,7 +19,13 @@ export default (server) => {
     method: 'POST',
     path: '/sales',
     handler: async (req, res) => {
-      const sale = await controller.create(req.payload);
+      const { sale, errors } = await controller.create(req.payload);
+      if (errors) {
+        return res({
+          code: 422,
+          errors,
+        });
+      }
       return res({
         code: 201,
         body: sale,
