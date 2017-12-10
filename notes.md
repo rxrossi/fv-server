@@ -1,7 +1,32 @@
-+ [ ] Products
-+ [ ] doing a purchase with invalid date does not show any error
++ [ ] Submit Errors
+  + [ ] Sales
+    + [ ] Name is required
+    + [ ] Value is required
+    + [ ] Value needs to be > 0
+    + [ ] Payment method is Required
+    + [ ] Date is required
+    + [ ] Start time is required
+    + [ ] End time is required
+    + [ ] Professional is Required
+    + [ ] Client is required
+    + [ ] Products
+      + [ ] Name is required
+      + [ ] Qty is required
+      + [ ] Qty needs to be > 0
+  + [ ] Purchases
+    + [ ] Provider is required
+    + [ ] Date is required
+    + [ ] Products
+      + [ ] Name is required (select)
+      + [ ] Value is required 
+      + [ ] Value need to be > 0
+      + [ ] Qty is required
+      + [ ] Qty need to be > 0
+
++ [ ] Products view one does not list price or sourceOrDestination
++ [ ] Products view does not show price 
 + [ ] sales on server side don't really calculate the cost of credit card
-+ [ ] Gotta be a way to check if a product has stock, if does not have it yet, probably should not be able to sell it (use on sale)
++ [ ] Gotta be a way to check if a product has stock for a sale, if does not have it yet, probably should not be able to sell it
 
 
 
@@ -16,7 +41,6 @@ Start Time
 End Time
 Professional
 Products used (dynamic fields)
-
 
 # Tips for next features
 Container should fetch list, components should not, the closest possible to a dumb componenet, the better, I think...
