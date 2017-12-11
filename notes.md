@@ -1,37 +1,15 @@
-+ [X] Submit Errors
-  + [X] Sales
-    + [X] Name is required
-    + [X] Value needs to be > 0
-    + [X] Payment method is Required
-    + [X] Date is required
-    + [X] Start time is required
-    + [X] End time is required
-    + [X] Professional is Required
-    + [X] Client is required
-    + [X] Products
-      + [X] Name is required
-      + [X] Qty needs to be > 0
-  + [X] Purchases
-    + [X] Seller is required
-    + [X] Date is required
-    + [X] Products
-      + [X] Name is required (select)
-      + [X] Value is required 
-      + [X] Value need to be > 0
-      + [X] Qty is required
-      + [X] Qty need to be > 0
-
+# Visual
 + [ ] Products view one does not list price or sourceOrDestination
 + [ ] Products view does not show price 
+
+# Functionality
++ [ ] Client view component is not just a component, it does fetch
 + [ ] sales on server side don't really calculate the cost of credit card
 + [ ] Gotta be a way to check if a product has stock for a sale, if does not have it yet, probably should not be able to sell it
 
-
-
-
 # Sales
 ## Form fields
-Name (of the sevice)
+Name (of the service)
 Value 
 Payment form (select)
 Date
