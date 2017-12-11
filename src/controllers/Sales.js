@@ -71,7 +71,7 @@ class Sales {
       errors.client = BLANK;
     }
     // professional
-    if (!client) {
+    if (!professional) {
       errors.professional = BLANK;
     }
     // date
