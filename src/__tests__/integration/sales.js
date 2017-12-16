@@ -233,7 +233,6 @@ describe('Sales routes', () => {
         price_per_unit: Joi.number(),
         product: Joi.object(),
       });
-
       Joi.assert(response.body.stockEntries[0], stockEntryOneSchema);
     });
 

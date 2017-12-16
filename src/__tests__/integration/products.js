@@ -165,11 +165,7 @@ describe('Products Route', () => {
       };
 
       const purchasesController = new PurchasesController();
-      const savedPurchase = await purchasesController.create(purchase);
-      // .then((resp) => {
-      //   console.log(resp.toJSON());
-      //   return resp;
-      // });
+      const { purchase: savedPurchase } = await purchasesController.create(purchase);
 
       const sale = {
         name: 'service one',
@@ -188,7 +184,7 @@ describe('Products Route', () => {
         ],
       };
       const saleController = new SalesController();
-      const savedSale = await saleController.create(sale);
+      const { sale: savedSale } = await saleController.create(sale);
       const stockController = new Stock();
       const stockEntries = await stockController.getAll();
 
