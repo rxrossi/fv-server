@@ -1,11 +1,11 @@
 import mongoose, { Schema } from 'mongoose';
-import Product from '../models/Products';
-import Purchase from '../models/Purchases';
+import '../models/Purchases';
+import '../models/Sales';
 
 const stockSchema = Schema({
   product: { type: Schema.Types.ObjectId, ref: 'Product' },
   sale: { type: Schema.Types.ObjectId, ref: 'Sales' },
-  purchase: { type: Schema.Types.ObjectId, ref: 'Purchase' },
+  purchase: { type: Schema.Types.ObjectId, ref: 'Purchases' },
   qty: { type: Number, required: true },
   price_per_unit: { type: Number, required: true },
   date: { type: Date, required: true },

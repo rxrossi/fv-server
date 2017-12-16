@@ -148,9 +148,7 @@ class Sales {
     await stock.getAll(); // ungly hack because the map for stock.create()
     // is not being waited to be completed without it
 
-    return {
-      sale: await this.getOne(sale_id),
-    };
+    return this.getOne(sale_id);
   }
 }
 

@@ -3,6 +3,7 @@
 + [ ] Products view does not show price 
 
 # Functionality
++ [ ] Product ViewOne does not fetch!?
 + [ ] Client view component is not just a component, it does fetch
 + [ ] sales on server side don't really calculate the cost of credit card
 + [ ] Gotta be a way to check if a product has stock for a sale, if does not have it yet, probably should not be able to sell it

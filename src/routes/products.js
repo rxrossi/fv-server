@@ -1,19 +1,15 @@
-import Product from '../models/Products';
-import Controller from '../controllers/Products'
-import { NOT_UNIQUE, BLANK, INVALID } from '../errors';
+import Controller from '../controllers/Products';
 
-const controller = new Controller;
+const controller = new Controller();
 
 export default (server) => {
   server.route({
     method: 'GET',
     path: '/products',
-    handler: async (req, res) => {
-      return res({
-        code: 200,
-        body: await controller.getAll(),
-      });
-    }
+    handler: async (req, res) => res({
+      code: 200,
+      body: await controller.getAll(),
+    }),
   });
 
   server.route({
@@ -25,7 +21,7 @@ export default (server) => {
       if (errors) {
         return res({
           code: 422, // 409 is conflict
-          errors
+          errors,
         });
       }
 
@@ -33,6 +29,6 @@ export default (server) => {
         code: 201,
         body: product,
       });
-    }
+    },
   });
 };

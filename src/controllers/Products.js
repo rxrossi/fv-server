@@ -1,12 +1,56 @@
 import Product, { addPrice, addQuantity, addAvgPriceFiveLast } from '../models/Products';
 import { NOT_UNIQUE, BLANK, INVALID } from '../errors';
+// import { addSourceOrDestination } from '../controllers/Stock';
+
+const addSourceOrDestination = (entry) => {
+  const sourceOrDestination = {};
+
+
+  if (entry.sale) {
+    sourceOrDestination.name = `${entry.sale.name} (${entry.sale.client.name})`;
+    sourceOrDestination.sale_id = entry.sale._id;
+  }
+  if (entry.purchase) {
+    sourceOrDestination.seller = `${entry.purchase.seller}`;
+    sourceOrDestination.purchase_id = entry.purchase._id;
+  }
+
+  return {
+    ...entry,
+    sourceOrDestination,
+  };
+};
 
 class ProductsController {
   getAll() {
     return Product
       .find({})
-      .populate('stock')
+      .populate({
+        path: 'stock',
+        populate: {
+          path: 'sale',
+          populate: {
+            path: 'client',
+          },
+        },
+      })
+      .populate({
+        path: 'stock',
+        populate: {
+          path: 'purchase',
+        },
+      })
       .then(products => products.map(product => product.toObject()))
+      .then(products => products.map(product =>
+        // console.log(product.stock.length);
+        // if (!product.stock.length) {
+        //   console.log('no stock');
+        //   return product;
+        // }
+        ({
+          ...product,
+          stock: product.stock.map(entry => addSourceOrDestination(entry)),
+        })))
       .then(products => products.map(product => addPrice(product)))
       .then(products => products.map(product => addQuantity(product)))
       .then(products => products.map(product => addAvgPriceFiveLast(product)));
@@ -15,8 +59,20 @@ class ProductsController {
   getOne(id) {
     return Product
       .findById(id)
-      .populate('stock')
+      .populate({
+        path: 'stock',
+        populate: {
+          path: 'sale',
+        },
+      })
+      .populate({
+        path: 'stock',
+        populate: {
+          path: 'purchase',
+        },
+      })
       .then(product => product.toObject())
+    // .then(product => addSourceOrDestination(product))
       .then(product => addPrice(product))
       .then(product => addQuantity(product))
       .then(product => addAvgPriceFiveLast(product));

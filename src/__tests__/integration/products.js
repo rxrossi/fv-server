@@ -165,7 +165,11 @@ describe('Products Route', () => {
       };
 
       const purchasesController = new PurchasesController();
-      await purchasesController.create(purchase);
+      const savedPurchase = await purchasesController.create(purchase);
+      // .then((resp) => {
+      //   console.log(resp.toJSON());
+      //   return resp;
+      // });
 
       const sale = {
         name: 'service one',
@@ -184,7 +188,7 @@ describe('Products Route', () => {
         ],
       };
       const saleController = new SalesController();
-      await saleController.create(sale);
+      const savedSale = await saleController.create(sale);
       const stockController = new Stock();
       const stockEntries = await stockController.getAll();
 
@@ -203,9 +207,21 @@ describe('Products Route', () => {
       expect(answer.body[0].stock[0].price_per_unit)
         .toEqual(purchase.products[0].total_price / purchase.products[0].qty);
 
+      const expectedSourceOrDestinationOfPurchase = {
+        seller: purchase.seller,
+        purchase_id: savedPurchase.id,
+      };
+
+      expect(answer.body[0].stock[0].sourceOrDestination)
+        .toEqual(expectedSourceOrDestinationOfPurchase);
+
       expect(answer.body[0].stock[1].qty).toEqual(sale.products[0].qty);
       expect(answer.body[0].stock[1].price_per_unit)
         .toEqual(0.1);
+      expect(answer.body[0].stock[1].sourceOrDestination).toEqual({
+        name: `${sale.name} (${client1.name})`,
+        sale_id: savedSale.id,
+      });
     });
   });
 

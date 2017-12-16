@@ -13,8 +13,8 @@ purchasesSchema.virtual('stockEntries', {
   foreignField: 'purchase',
 });
 
-purchasesSchema.virtual('id').get(function(){
-    return this._id.toHexString();
+purchasesSchema.virtual('id').get(function () {
+  return this._id.toHexString();
 });
 
 purchasesSchema.set('toObject', { getters: true, virtuals: true });

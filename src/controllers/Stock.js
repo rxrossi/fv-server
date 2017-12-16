@@ -3,11 +3,38 @@ import Products from '../controllers/Products';
 
 const products = new Products();
 
+export const addSourceOrDestination = (entry) => {
+  const sourceOrDestination = {};
+
+
+  if (entry.sale) {
+    sourceOrDestination.name = `${entry.sale.name} (${entry.sale.client.name})`;
+    sourceOrDestination.sale_id = entry.sale._id;
+  }
+  if (entry.purchase) {
+    sourceOrDestination.seller = `${entry.purchase.seller}`;
+    sourceOrDestination.purchase_id = entry.purchase._id;
+  }
+
+  return {
+    ...entry,
+    sourceOrDestination,
+  };
+};
+
 export default class StockController {
   getAll() {
     return Stock.find({})
+      .populate({
+        path: 'sale',
+        populate: {
+          path: 'client',
+        },
+      })
       .populate('product')
-      .then(entries => entries.map(entry => entry.toObject()));
+      .populate('purchase')
+      .then(entries => entries.map(entry => entry.toObject()))
+      .then(entries => entries.map(entry => addSourceOrDestination(entry)));
   }
 
   async create(postBody) {

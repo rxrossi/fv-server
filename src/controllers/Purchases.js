@@ -71,9 +71,7 @@ export default class Purchases {
 
     const stockItems = await stock.getAll();
 
-    return {
-      purchase: await this.getOne(purchase_id),
-    };
+    return this.getOne(purchase_id);
   }
 
   getOne(id) {
