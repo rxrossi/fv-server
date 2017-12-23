@@ -139,11 +139,11 @@ describe('Products Route', () => {
 
       expect(answer.code).toEqual(200);
       expect(answer.body.length).toEqual(3);
-      expect(answer.body[0].name).toEqual(expected[0].name);
-      expect(answer.body[0].measure_unit).toEqual(expected[0].measure_unit);
-      expect(answer.body[0].quantity).toEqual(expected[0].quantity);
-      expect(answer.body[0].price).toEqual(expected[0].price);
-      expect(answer.body[0].avgPriceFiveLast).toEqual(expected[0].avgPriceFiveLast);
+      expect(answer.body[0].name).toEqual(expected[2].name);
+      expect(answer.body[0].measure_unit).toEqual(expected[2].measure_unit);
+      expect(answer.body[0].quantity).toEqual(expected[2].quantity);
+      expect(answer.body[0].price).toEqual(expected[2].price);
+      expect(answer.body[0].avgPriceFiveLast).toEqual(expected[2].avgPriceFiveLast);
     });
 
     it('sends a a list of products with valid stock when entries exist', async () => {

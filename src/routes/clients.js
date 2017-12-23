@@ -2,24 +2,22 @@ import Client from '../models/Clients';
 import { NOT_UNIQUE, BLANK } from '../errors';
 
 export default (server) => {
-    server.route({
-      method: 'GET',
-      path: '/clients',
-      handler: async (req, res) => {
-        await Client.find((err, clients) => {
-          if (err) {
-            return res({
-              code: 500,
-              error: 'Could not fetch clients',
-            });
-          }
-          return res({
-            code: 200,
-            body: clients
-          });
-        })
-      }
-    });
+  server.route({
+    method: 'GET',
+    path: '/clients',
+    handler: async (req, res) => {
+      await Client.find()
+        .collation({ locale: 'en', strength: 2 }).sort({ name: 1 })
+        .then(clients => res({
+          code: 200,
+          body: clients,
+        }))
+        .catch(() => res({
+          code: 500,
+          error: 'Could not fetch clients',
+        }));
+    },
+  });
 
   server.route({
     path: '/clients',
@@ -33,14 +31,13 @@ export default (server) => {
       }
 
       // Check if name is duplicated
-      await Client.findOne({ "name":  { $regex : new RegExp(name, "i") } }, (err, client) => {
-        if (err) {
-          return console.error('error when finding a client with this name');
-        }
-        if (client) {
-          errors.name = NOT_UNIQUE;
-        }
-      });
+      await Client
+        .findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } })
+        .then((client) => {
+          if (client) {
+            errors.name = NOT_UNIQUE;
+          }
+        });
 
       if (!name) {
         errors.name = BLANK;
@@ -57,8 +54,8 @@ export default (server) => {
 
       return res({
         code: 422, // 409 is conflict
-        errors
+        errors,
       });
-    }
+    },
   });
-}
+};

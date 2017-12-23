@@ -25,6 +25,7 @@ class ProductsController {
   getAll() {
     return Product
       .find({})
+      .collation({ locale: 'en', strength: 2 }).sort({ name: 1 })
       .populate({
         path: 'stock',
         populate: {
@@ -42,11 +43,6 @@ class ProductsController {
       })
       .then(products => products.map(product => product.toObject()))
       .then(products => products.map(product =>
-        // console.log(product.stock.length);
-        // if (!product.stock.length) {
-        //   console.log('no stock');
-        //   return product;
-        // }
         ({
           ...product,
           stock: product.stock.map(entry => addSourceOrDestination(entry)),
@@ -95,7 +91,7 @@ class ProductsController {
     }
 
     // Check if name is duplicated
-    await Product.findOne({ name: { $regex: new RegExp(name, 'i') } }, (err, product) => {
+    await Product.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } }, (err, product) => {
       if (err) {
         return console.error('error when finding a product with this name');
       }

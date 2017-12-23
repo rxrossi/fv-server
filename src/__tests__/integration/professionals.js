@@ -1,4 +1,4 @@
-import 'isomorphic-fetch';
+import 'isomorphic-fetch'; /* global fetch */
 import Professional from '../../models/Professionals';
 import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
@@ -16,10 +16,10 @@ describe('Professionals Route', () => {
 
     await Professional.deleteMany({}, (err) => {
       if (err) {
-        throw "Could not Professional.deleteMany on DB";
+        throw 'Could not Professional.deleteMany on DB';
       }
       return true;
-    })
+    });
   });
 
   afterEach((done) => {
@@ -29,11 +29,11 @@ describe('Professionals Route', () => {
   describe('GET Route', () => {
     it('receives an empty array when no professionals', async () => {
       const answer = await fetch(PROFESSIONALS_URL)
-        .then(res => res.json())
+        .then(res => res.json());
 
       expect(answer).toEqual({
         code: 200,
-        body: []
+        body: [],
       });
     });
 
@@ -54,16 +54,15 @@ describe('Professionals Route', () => {
 
       expect(answer.code).toEqual(200);
       expect(answer.body.length).toEqual(2);
-      expect(typeof answer.body[0].id).toEqual("string");
-      expect(answer.body[0].name).toEqual(professionalsList[0].name);
+      expect(typeof answer.body[0].id).toEqual('string');
+      // Response is ordered by name
+      expect(answer.body[0].name).toEqual(professionalsList[1].name);
     });
-  })
+  });
 
   describe('POST Route', () => {
     it('Can post a professional', async () => {
-      const beforeList = await Professional.find((err, professionals) => {
-        return professionals;
-      });
+      const beforeList = await Professional.find((err, professionals) => professionals);
       expect(beforeList.length).toBe(0);
 
       const professionalExample = {
@@ -75,20 +74,16 @@ describe('Professionals Route', () => {
         body: JSON.stringify(professionalExample),
       }).then(res => res.json());
 
-      const afterList = await Professional.find((err, professionals) => {
-        return professionals;
-      });
+      const afterList = await Professional.find((err, professionals) => professionals);
       expect(afterList.length).toBe(1);
       expect(afterList[0].name).toEqual(professionalExample.name);
 
-      expect(res.code).toEqual(201); //201 means created
+      expect(res.code).toEqual(201); // 201 means created
       expect(res.body.name).toEqual(professionalExample.name);
     });
 
     it('Can\'t post a professional with the same name of a previous professional', async () => {
-      const beforeList = await Professional.find((err, professionals) => {
-        return professionals;
-      });
+      const beforeList = await Professional.find((err, professionals) => professionals);
       expect(beforeList.length).toBe(0);
 
       const professionalExample = {
@@ -98,7 +93,7 @@ describe('Professionals Route', () => {
       const res1 = await fetch(PROFESSIONALS_URL, {
         method: 'POST',
         body: JSON.stringify(professionalExample),
-      }).then(res => res.json())
+      }).then(res => res.json());
 
       const res2 = await fetch(PROFESSIONALS_URL, {
         method: 'POST',
@@ -106,9 +101,7 @@ describe('Professionals Route', () => {
       }).then(res => res.json());
 
 
-      const afterList = await Professional.find((err, professionals) => {
-        return professionals;
-      });
+      const afterList = await Professional.find((err, professionals) => professionals);
 
       expect(afterList.length).toBe(1);
       expect(afterList[0].name).toEqual(professionalExample.name);
@@ -124,7 +117,6 @@ describe('Professionals Route', () => {
           name: NOT_UNIQUE,
         },
       });
-
     });
-  })
+  });
 });
