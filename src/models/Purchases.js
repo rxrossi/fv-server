@@ -1,6 +1,4 @@
 import mongoose, { Schema } from 'mongoose';
-import Product from '../models/Products';
-import Stock from '../models/Stock';
 
 const purchasesSchema = Schema({
   seller: { type: String, required: true },

@@ -92,6 +92,7 @@ export default class Purchases {
   getAll() {
     return PurchasesModel
       .find({})
+      .sort('-date')
       .populate({
         path: 'stockEntries',
         populate: {

@@ -21,6 +21,7 @@ class Sales {
 
   getAll() {
     return this.Model.find({})
+      .sort({ date: 'descending' })
       .populate({
         path: 'stockEntries',
         populate: {

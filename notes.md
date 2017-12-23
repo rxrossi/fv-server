@@ -8,12 +8,14 @@
   + [X] done on clients, checked [X]
   + [X] done on professionals, checked [X]
   + [X] done on products, checked [X]
++ [ ] Sales and purchases from the most recent to the older
+  + [X] for purchases
+  + [-] needs to work on fields os sales first, probably will order by start_time
 
 ## Sales
-+ [ ] Sales add will receive datetime for start_time and end_time instead of the three fields
++ [-] Sales add will receive datetime for start_time and end_time instead of the three fields
 + [ ] Sales don't really calculate the cost of credit card
 + [ ] Sales should also return a the fields: time_spent, profit_per_hour, payment_method_cost
-+ [ ] Sales and purchases from the most recent to the older
 + [ ] Check if sales post is returning errors
 
 ## Professionals features
