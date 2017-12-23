@@ -1,105 +1,13 @@
-# Visual
-
-# Functionality
-+ [ ] sales on server side don't really calculate the cost of credit card
+# Server
+## General
++ [ ] Verification of name unique is a fuzzy search instead of just case insensitive
 + [ ] clients, professionals, products should be ordered by name
-+ [ ] Gotta be a way to check if a product has stock for a sale, if does not have it yet, probably should not be able to sell it
 
-# Sales
-## Form fields
-Name (of the service)
-Value 
-Payment form (select)
-Date
-Start Time
-End Time
-Professional
-Products used (dynamic fields)
+## Sales
++ [ ] Sales add will receive datetime for start_time and end_time instead of the three fields
++ [ ] Sales don't really calculate the cost of credit card
++ [ ] Sales should also return a the fields: time_spent, profit_per_hour, payment_method_cost
++ [ ] Sales and purchases from the most recent to the older
 
-# Tips for next features
-Container should fetch list, components should not, the closest possible to a dumb componenet, the better, I think...
-
-# Doing TDD Outside in
-Write a failing acceptance test, tdd actions, reducers, components, in this order, container tests does not seem nessary maybe it is better to write them on acceptance tests
-
-# Working with stock
-Stock is a list of purchases and sales, to add to it, use Purchases, to remove, use Sales or maybe Discard
-
--- Previous notes --
-
-# Purchases server side
-
-expected response:
-arrayOf(
-  id,
-  seller,
-  date,
-  products: arrayOf(
-    id,
-    name,
-    qty,
-    price,
-  )
-)
-
-Models:
-
-Purchase: {
-  seller,
-  date,
-  stock: [
-    stock_id,
-  ],
-}
-
-Sales: {
-  title,
-  date,
-  start_time,
-  end_time,
-  client_id,
-  professional_id,
-  stock: [
-    stock_id
-  ]
-}
-
-Product.stock( // actual
-  {
-    id,
-    qty,
-    sourceOrDestination, // duplication of sale.title or purchase.seller // BAD IDEA
-    date,
-  }
-)
-
-Product.stock( // what I need
-  {
-    id,
-    product_id,
-    qty,
-    price,
-    sale_id,
-    purchase_id,
-    date,
-  }
-)
-
-The above would require that purchases and/or sales are made
-the response would be
-
-Product: {
-  id,
-  name,
-  measure_unit,
-  quantity,
-  stock: [
-    id,
-    date,
-    price
-    qty,
-    description // of a sort of join using sale_id or purchase_id
-  ]
-}
-
-
+## Professionals features
++ [ ] Should list total profit 

@@ -126,6 +126,8 @@ describe('StockController', () => {
     let professional1;
     let purchase;
     let sale;
+    let saleResponseFromController;
+    let purchaseResponseFromController;
     const sut = new StockController();
 
     beforeEach(async () => {
@@ -147,7 +149,7 @@ describe('StockController', () => {
       };
 
       const purchasesController = new PurchasesController();
-      purchase = await purchasesController.create(purchase);
+      purchaseResponseFromController = await purchasesController.create(purchase);
 
       sale = {
         name: 'service one',
@@ -165,25 +167,24 @@ describe('StockController', () => {
           },
         ],
       };
-      const saleController = new SalesController();
-      sale = await saleController.create(sale);
+      const salesController = new SalesController();
+      saleResponseFromController = await salesController.create(sale);
     });
 
     it('returns apropriated sourceOrDestination for a purchase', async () => {
       const stock = await sut.getAll();
       // console.log(stock[0]);
       expect(stock[0].sourceOrDestination).toEqual({
-        seller: purchase.seller,
-        purchase_id: purchase._id,
+        seller: purchaseResponseFromController.purchase.seller,
+        purchase_id: purchaseResponseFromController.purchase._id,
       });
     });
 
     it('returns apropriated sourceOrDestination for a sale', async () => {
       const stock = await sut.getAll();
-      // console.log(stock[1]);
       expect(stock[1].sourceOrDestination).toEqual({
-        name: `${sale.name} (${client1.name})`,
-        sale_id: sale._id,
+        name: `${saleResponseFromController.sale.name} (${client1.name})`,
+        sale_id: saleResponseFromController.sale._id,
       });
     });
   });
