@@ -117,7 +117,7 @@ class Sales {
     }
 
     const errorOfProducts = [];
-    products.forEach(({ product, qty }) => {
+    products && products.forEach(({ product, qty }) => {
       const errors = {};
       if (!product) {
         errors.product = BLANK;
@@ -158,7 +158,7 @@ class Sales {
 
     const { id: sale_id } = await sale.save();
 
-    products.map(item =>
+    products && products.map(item =>
       stock.create({
         qty: item.qty,
         product: item.product,

@@ -10,7 +10,7 @@ import ClientModel from '../../models/Clients';
 import ProfessionalModel from '../../models/Professionals';
 import configureServer from '../../configureServer';
 import { BLANK, NOT_POSITIVE } from '../../errors';
-import customJoiAssert from '../../joiAssertRequirePresence.js';
+import getJoiValidationErrors from '../../joiAssertRequirePresence';
 
 const SALES_URL = 'http://localhost:5001/sales';
 
@@ -223,7 +223,7 @@ describe('Sales routes', () => {
         __v: Joi.number(),
       });
 
-      expect(customJoiAssert(joiGetBody, response.body)).toBe(null);
+      expect(getJoiValidationErrors(joiGetBody, response.body)).toBe(null);
 
       const stockEntryOneSchema = Joi.object().keys({
         _id: Joi.string(),
@@ -236,6 +236,54 @@ describe('Sales routes', () => {
         product: Joi.object(),
       });
       Joi.assert(response.body.stockEntries[0], stockEntryOneSchema);
+    });
+
+    it('records a sale without products', async () => {
+      const postBody = {
+        name: 'service one',
+        client: client1._id,
+        professional: professional1._id,
+        start_time: new Date(2017, 11, 7, 10, 0),
+        end_time: new Date(2017, 11, 7, 16, 0),
+        payment_method: 'money',
+        value: 300,
+      };
+
+      const response = await fetch(SALES_URL, {
+        method: 'POST',
+        body: JSON.stringify(postBody),
+      }).then(res => res.json());
+
+      expect(response.code).toBe(201);
+
+      const joiGetBody = Joi.object().keys({
+        _id: Joi.string(),
+        id: Joi.string(),
+        name: 'service one',
+        client: {
+          ...client1.toObject(),
+          _id: Joi.string(),
+        },
+        professional: {
+          ...professional1.toObject(),
+          _id: Joi.string(),
+        },
+        start_time: new Date(2017, 11, 7, 10, 0),
+        end_time: new Date(2017, 11, 7, 16, 0),
+        time_spent: '6:00',
+        profit_per_hour: 50,
+        payment: {
+          value_total: 300,
+          value_liquid: 300,
+          discount: 'none',
+          method: 'money',
+          avaiable_at: Joi.any(),
+        },
+        stockEntries: Joi.array().length(0),
+        profit: 300, // value_liquid - products
+        __v: Joi.number(),
+      });
+      expect(getJoiValidationErrors(joiGetBody, response.body)).toBe(null);
     });
 
     it('returns an error case it is needed', async () => {
