@@ -1,16 +1,15 @@
 import mongoose, { Schema } from 'mongoose';
-import Product from '../models/Products';
-import Stock from '../models/Stock';
-import Client from '../models/Clients';
-import Professional from '../models/Professionals';
+// import Product from '../models/Products';
+// import Stock from '../models/Stock';
+// import Client from '../models/Clients';
+// import Professional from '../models/Professionals';
 
 const salesSchema = Schema({
   name: { type: String, required: true },
   client: { type: Schema.Types.ObjectId, ref: 'Client' },
   professional: { type: Schema.Types.ObjectId, ref: 'Professional' },
-  start_time: { type: String, required: true },
-  end_time: { type: String, required: true },
-  date: { type: Date, required: true },
+  start_time: { type: Date, required: true },
+  end_time: { type: Date, required: true },
   payment: {
     value_total: { type: Number, required: true },
     value_liquid: { type: Number, required: true },

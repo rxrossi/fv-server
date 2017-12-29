@@ -21,7 +21,7 @@ class Sales {
 
   getAll() {
     return this.Model.find({})
-      .sort({ date: 'descending' })
+      .sort({ start_time: 'descending' })
       .populate({
         path: 'stockEntries',
         populate: {
@@ -55,7 +55,6 @@ class Sales {
       professional,
       start_time,
       end_time,
-      date,
       payment_method,
       value,
       products,
@@ -74,10 +73,6 @@ class Sales {
     // professional
     if (!professional) {
       errors.professional = BLANK;
-    }
-    // date
-    if (!date) {
-      errors.date = BLANK;
     }
     // start_time
     if (!start_time) {
@@ -123,7 +118,7 @@ class Sales {
       value_liquid: value,
       value_total: value,
       method: payment_method,
-      avaiable_at: date,
+      avaiable_at: start_time,
       discount: 'none',
     };
 
@@ -133,7 +128,6 @@ class Sales {
       professional,
       start_time,
       end_time,
-      date,
       payment: paymentFullInfo,
     });
 
@@ -144,7 +138,7 @@ class Sales {
         qty: item.qty,
         product: item.product,
         sale: sale_id,
-        date,
+        date: start_time,
       }));
     await stock.getAll(); // ungly hack because the map for stock.create()
     // is not being waited to be completed without it
