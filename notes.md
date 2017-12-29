@@ -15,7 +15,7 @@
 ## Sales
 + [X] Sales add will receive datetime for start_time and end_time instead of the three fields
 + [ ] Sales don't really calculate the cost of credit card
-+ [ ] Sales should also return a the fields: time_spent, profit_per_hour, payment_method_cost
++ [X] Sales should also return a the fields: time_spent, profit_per_hour
 + [ ] Check if sales post is returning errors
 
 ## Professionals features

@@ -10,6 +10,7 @@ import ClientModel from '../../models/Clients';
 import ProfessionalModel from '../../models/Professionals';
 import configureServer from '../../configureServer';
 import { BLANK, NOT_POSITIVE } from '../../errors';
+import customJoiAssert from '../../joiAssertRequirePresence.js';
 
 const SALES_URL = 'http://localhost:5001/sales';
 
@@ -132,6 +133,8 @@ describe('Sales routes', () => {
         },
         start_time: Joi.date(),
         end_time: Joi.date(),
+        time_spent: Joi.string(),
+        profit_per_hour: Joi.number(),
         payment: {
           value_total: 300,
           value_liquid: 300,
@@ -206,6 +209,8 @@ describe('Sales routes', () => {
         },
         start_time: new Date(2017, 11, 7, 10, 0),
         end_time: new Date(2017, 11, 7, 16, 0),
+        time_spent: '6:00',
+        profit_per_hour: 39.17,
         payment: {
           value_total: 300,
           value_liquid: 300,
@@ -217,7 +222,8 @@ describe('Sales routes', () => {
         profit: 300 - 45 - 20, // value_liquid - products
         __v: Joi.number(),
       });
-      Joi.assert(response.body, joiGetBody);
+
+      expect(customJoiAssert(joiGetBody, response.body)).toBe(null);
 
       const stockEntryOneSchema = Joi.object().keys({
         _id: Joi.string(),

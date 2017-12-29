@@ -2,6 +2,7 @@ import SalesModel from '../models/Sales';
 import StockController from '../controllers/Stock';
 import { BLANK, NOT_POSITIVE } from '../errors';
 
+const pad2 = x => (x > 9 ? x.toString() : `0${x}`);
 const stock = new StockController();
 
 function calcProfit(sale) {
@@ -11,6 +12,26 @@ function calcProfit(sale) {
   return {
     ...sale,
     profit: sale.payment.value_liquid - costOfProducts,
+  };
+}
+
+function calcSpentTime(sale) {
+  const TimeSpent = new Date(sale.end_time - sale.start_time);
+
+  return {
+    ...sale,
+    time_spent: `${TimeSpent.getHours()}:${pad2(TimeSpent.getMinutes())}`,
+  };
+}
+
+function calcProfitPerHour(sale) {
+  const TimeSpent = new Date(sale.end_time - sale.start_time);
+  const hours = TimeSpent.getHours() + (TimeSpent.getMinutes() / 60);
+  const profit_per_hour = (sale.profit / hours).toFixed(2);
+
+  return {
+    ...sale,
+    profit_per_hour,
   };
 }
 
@@ -31,7 +52,9 @@ class Sales {
       .populate('client')
       .populate('professional')
       .then(sales => sales.map(sale => sale.toObject()))
-      .then(sales => sales.map(sale => calcProfit(sale)));
+      .then(sales => sales.map(sale => calcProfit(sale)))
+      .then(sales => sales.map(sale => calcSpentTime(sale)))
+      .then(sales => sales.map(sale => calcProfitPerHour(sale)));
   }
 
   getOne(id) {
@@ -45,7 +68,9 @@ class Sales {
       .populate('client')
       .populate('professional')
       .then(sale => sale.toObject())
-      .then(sale => calcProfit(sale));
+      .then(sale => calcProfit(sale))
+      .then(sale => calcSpentTime(sale))
+      .then(sale => calcProfitPerHour(sale));
   }
 
   async create(postBody) {
