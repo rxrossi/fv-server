@@ -125,9 +125,7 @@ class Sales {
       if (!(qty > 0)) {
         errors.qty = NOT_POSITIVE;
       }
-      if (Object.keys(errors).length) {
-        errorOfProducts.push(errors);
-      }
+      errorOfProducts.push(errors);
     });
 
     if (Object.keys(errors).length || errorOfProducts.length) {
