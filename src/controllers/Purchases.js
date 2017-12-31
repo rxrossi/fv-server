@@ -14,6 +14,7 @@ function addPriceToPurchases(purchases) {
 
 export default class Purchases {
   async create({ date, seller, products }) {
+    console.log(date, seller, products);
     const errors = {};
     const purchase = new PurchasesModel({
       date,
@@ -31,24 +32,25 @@ export default class Purchases {
     }
 
     const errorOfProducts = [];
-    products.forEach(({ id, qty, total_price }) => {
+    let productErrorsCount = 0;
+    products && products.forEach(({ id, qty, total_price }) => {
       const errors = {};
       if (!id) {
         errors.id = BLANK;
+        productErrorsCount += 1;
       }
       if (!(qty > 0)) {
         errors.qty = NOT_POSITIVE;
+        productErrorsCount += 1;
       }
       if (!(total_price > 0)) {
         errors.total_price = NOT_POSITIVE;
+        productErrorsCount += 1;
       }
-
-      if (Object.keys(errors).length) {
-        errorOfProducts.push(errors);
-      }
+      errorOfProducts.push(errors);
     });
 
-    if (Object.keys(errors).length || errorOfProducts.length) {
+    if (Object.keys(errors).length || productErrorsCount) {
       return {
         errors: {
           ...errors,
@@ -59,7 +61,7 @@ export default class Purchases {
 
     const { id: purchase_id } = await purchase.save();
 
-    await products.map(async (item) => {
+    products && products.map(async (item) => {
       await stock.create({
         product: item.id,
         purchase: purchase_id,

@@ -117,18 +117,21 @@ class Sales {
     }
 
     const errorOfProducts = [];
+    let productErrorsCount = 0;
     products && products.forEach(({ product, qty }) => {
       const errors = {};
       if (!product) {
         errors.product = BLANK;
+        productErrorsCount += 1;
       }
       if (!(qty > 0)) {
         errors.qty = NOT_POSITIVE;
+        productErrorsCount += 1;
       }
       errorOfProducts.push(errors);
     });
 
-    if (Object.keys(errors).length || errorOfProducts.length) {
+    if (Object.keys(errors).length || productErrorsCount) {
       return {
         errors: {
           ...errors,
