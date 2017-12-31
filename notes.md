@@ -12,6 +12,9 @@
   + [X] for purchases
   + [X] needs to work on fields os sales first, probably will order by start_time
 
+## Purchases
++ [ ] Purchases view one shows incorrect value
+
 ## Sales
 + [ ] Sales don't really calculate the cost of credit card
 + [X] Sales product errors, if the first product is filled correctly, the array of product errors does not come with a empty object, making 2nd set of errors to appear on first product
