@@ -13,8 +13,8 @@
   + [X] needs to work on fields os sales first, probably will order by start_time
 
 ## Sales
-+ [X] Sales product errors, if the first product is filled correctly, the array of product errors does not come with a empty object, making 2nd set of errors to appear on first product
 + [ ] Sales don't really calculate the cost of credit card
++ [X] Sales product errors, if the first product is filled correctly, the array of product errors does not come with a empty object, making 2nd set of errors to appear on first product
 + [X] Check if sales post is returning errors
 + [X] Sales add will receive datetime for start_time and end_time instead of the three fields
 + [X] Sales should also return a the fields: time_spent, profit_per_hour
