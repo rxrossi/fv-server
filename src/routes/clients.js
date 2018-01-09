@@ -20,6 +20,62 @@ export default (server) => {
   });
 
   server.route({
+    method: 'DELETE',
+    path: '/clients',
+    handler: async (req, res) => {
+      await Client.findByIdAndRemove(req.payload)
+        .then(() => res({
+          code: 204,
+        }))
+        .catch(() => res({
+          code: 500,
+        }));
+    },
+  });
+
+  server.route({
+    path: '/clients',
+    method: 'PUT',
+    handler: async (req, res) => {
+      const { name, phone, id } = req.payload;
+      const errors = {};
+
+      if (!phone) {
+        errors.phone = BLANK;
+      }
+
+      // Check if name is duplicated
+      await Client
+        .findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } })
+        .then((client) => {
+          if (client && client._id !== id) {
+            errors.name = NOT_UNIQUE;
+          }
+        });
+
+      if (!name) {
+        errors.name = BLANK;
+      }
+
+      if (!Object.keys(errors).length) {
+        const client = await Client.findById(id);
+        client.name = name;
+        client.phone = phone;
+        await client.save();
+        return res({
+          code: 201,
+          body: client,
+        });
+      }
+
+      return res({
+        code: 422, // 409 is conflict
+        errors,
+      });
+    },
+  });
+
+  server.route({
     path: '/clients',
     method: 'POST',
     handler: async (req, res) => {

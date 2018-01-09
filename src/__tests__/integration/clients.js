@@ -6,14 +6,14 @@ import { NOT_UNIQUE } from '../../errors';
 const CLIENTS_URL = 'http://localhost:5001/clients';
 let server;
 
-const errHandler = err => console.error(err);
+const errHandler = err => (err ? console.error(err) : false);
 
 describe('Clients Route', () => {
   beforeEach(async () => {
     server = await configureServer()
-      .then((server) => {
-        server.start();
-        return server;
+      .then((sv) => {
+        sv.start();
+        return sv;
       });
 
     await Client.deleteMany({}, errHandler);
@@ -64,7 +64,7 @@ describe('Clients Route', () => {
       const res = await fetch(CLIENTS_URL, {
         method: 'POST',
         body: JSON.stringify(john),
-      }).then(res => res.json());
+      }).then(resp => resp.json());
 
       const afterList = await Client.find((err, clients) => clients);
       expect(afterList.length).toBe(1);
@@ -83,7 +83,7 @@ describe('Clients Route', () => {
         phone: '999',
       };
 
-      const res1 = await fetch(CLIENTS_URL, {
+      await fetch(CLIENTS_URL, {
         method: 'POST',
         body: JSON.stringify(john),
       }).then(res => res.json());
@@ -111,17 +111,44 @@ describe('Clients Route', () => {
   describe('PUT Route', () => {
     it('updates a client', async () => {
       // Prepare
-      // Insert clients
-      const clientsList = [
-        { name: 'John', phone: '999 888 7777' },
-        { name: 'Mary', phone: '999 777 6666' },
-      ];
+      // Insert client
+      const client = new Client({ name: 'Mary', phone: '999 777 6666' });
+      await client.save();
 
-      const clientsOnServer = await Client.collection.insert(clientsList, errHandler);
-      console.log(clientsOnServer);
       // Act
+      const clientUpdated = {
+        id: client._id,
+        name: 'Mary2',
+        phone: client.phone,
+      };
+
+      await fetch(CLIENTS_URL, {
+        method: 'PUT',
+        body: JSON.stringify(clientUpdated),
+      }).then(res => res.json());
 
       // Assert
+      const updatedClientFromServer = await Client.findById(client._id);
+      expect(updatedClientFromServer.name).toBe('Mary2');
+    });
+  });
+
+  describe('Delete route', () => {
+    it('deletes a client', async () => {
+      // Prepare
+      // Insert client
+      const client = new Client({ name: 'Mary', phone: '999 777 6666' });
+      await client.save();
+      // Act
+      const resp = await fetch(CLIENTS_URL, {
+        method: 'DELETE',
+        body: JSON.stringify(client._id),
+      }).then(res => res.json());
+
+      // Assert
+      const deletedClient = await Client.findById(client._id);
+      expect(resp.code).toBe(204);
+      expect(deletedClient).toEqual(null);
     });
   });
 });
