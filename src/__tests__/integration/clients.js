@@ -6,6 +6,8 @@ import { NOT_UNIQUE } from '../../errors';
 const CLIENTS_URL = 'http://localhost:5001/clients';
 let server;
 
+const errHandler = err => console.error(err);
+
 describe('Clients Route', () => {
   beforeEach(async () => {
     server = await configureServer()
@@ -14,12 +16,7 @@ describe('Clients Route', () => {
         return server;
       });
 
-    await Client.deleteMany({}, (err) => {
-      if (err) {
-        throw 'Could not Client.deleteMany on DB';
-      }
-      return true;
-    });
+    await Client.deleteMany({}, errHandler);
   });
 
   afterEach((done) => {
@@ -43,11 +40,7 @@ describe('Clients Route', () => {
         { name: 'Mary', phone: '999 777 6666' },
       ];
 
-      await Client.collection.insert(clientsList, (err) => {
-        if (err) {
-          console.log(err);
-        }
-      });
+      await Client.collection.insert(clientsList, errHandler);
 
       const answer = await fetch(CLIENTS_URL)
         .then(res => res.json());
@@ -106,17 +99,29 @@ describe('Clients Route', () => {
       expect(afterList.length).toBe(1);
       expect(afterList[0].name).toEqual(john.name);
 
-      // Standard response
-      // {
-      //  code,
-      //  body,
-      // }
       expect(res2).toEqual({
         code: 422,
         errors: {
           name: NOT_UNIQUE,
         },
       });
+    });
+  });
+
+  describe('PUT Route', () => {
+    it('updates a client', async () => {
+      // Prepare
+      // Insert clients
+      const clientsList = [
+        { name: 'John', phone: '999 888 7777' },
+        { name: 'Mary', phone: '999 777 6666' },
+      ];
+
+      const clientsOnServer = await Client.collection.insert(clientsList, errHandler);
+      console.log(clientsOnServer);
+      // Act
+
+      // Assert
     });
   });
 });

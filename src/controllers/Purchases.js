@@ -14,7 +14,6 @@ function addPriceToPurchases(purchases) {
 
 export default class Purchases {
   async create({ date, seller, products }) {
-    console.log(date, seller, products);
     const errors = {};
     const purchase = new PurchasesModel({
       date,
