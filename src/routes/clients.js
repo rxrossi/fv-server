@@ -63,7 +63,7 @@ export default (server) => {
         client.phone = phone;
         await client.save();
         return res({
-          code: 201,
+          code: 200,
           body: client,
         });
       }
