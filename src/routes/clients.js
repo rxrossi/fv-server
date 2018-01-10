@@ -48,7 +48,7 @@ export default (server) => {
       await Client
         .findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } })
         .then((client) => {
-          if (client && client._id !== id) {
+          if (client && client._id.toString() !== id) {
             errors.name = NOT_UNIQUE;
           }
         });
