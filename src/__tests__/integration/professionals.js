@@ -9,14 +9,14 @@ let server;
 describe('Professionals Route', () => {
   beforeEach(async () => {
     server = await configureServer()
-      .then((server) => {
-        server.start();
-        return server;
+      .then((sv) => {
+        sv.start();
+        return sv;
       });
 
     await Professional.deleteMany({}, (err) => {
       if (err) {
-        throw 'Could not Professional.deleteMany on DB';
+        throw new Error('Could not Professional.deleteMany on DB');
       }
       return true;
     });
@@ -45,7 +45,7 @@ describe('Professionals Route', () => {
 
       await Professional.collection.insert(professionalsList, (err) => {
         if (err) {
-          console.log(err);
+          throw new Error(err);
         }
       });
 
@@ -72,7 +72,7 @@ describe('Professionals Route', () => {
       const res = await fetch(PROFESSIONALS_URL, {
         method: 'POST',
         body: JSON.stringify(professionalExample),
-      }).then(res => res.json());
+      }).then(resp => resp.json());
 
       const afterList = await Professional.find((err, professionals) => professionals);
       expect(afterList.length).toBe(1);
@@ -90,7 +90,7 @@ describe('Professionals Route', () => {
         name: 'Carl',
       };
 
-      const res1 = await fetch(PROFESSIONALS_URL, {
+      await fetch(PROFESSIONALS_URL, {
         method: 'POST',
         body: JSON.stringify(professionalExample),
       }).then(res => res.json());
@@ -117,6 +117,49 @@ describe('Professionals Route', () => {
           name: NOT_UNIQUE,
         },
       });
+    });
+  });
+
+  describe('PUT Route', () => {
+    it('updates a professional', async () => {
+      // Prepare
+      // Insert professional
+      const professional = new Professional({ name: 'Mary' });
+      await professional.save();
+
+      // Act
+      const clientUpdated = {
+        id: professional._id,
+        name: 'Mary2',
+      };
+
+      await fetch(PROFESSIONALS_URL, {
+        method: 'PUT',
+        body: JSON.stringify(clientUpdated),
+      }).then(res => res.json());
+
+      // Assert
+      const updatedProfessionalFromServer = await Professional.findById(professional._id);
+      expect(updatedProfessionalFromServer.name).toBe('Mary2');
+    });
+  });
+
+  describe('Delete route', () => {
+    it('deletes a professional', async () => {
+      // Prepare
+      // Insert professional
+      const professional = new Professional({ name: 'Mary' });
+      await professional.save();
+      // Act
+      const resp = await fetch(PROFESSIONALS_URL, {
+        method: 'DELETE',
+        body: JSON.stringify(professional._id),
+      }).then(res => res.json());
+
+      // Assert
+      const deletedProfessional = await Professional.findById(professional._id);
+      expect(resp.code).toBe(204);
+      expect(deletedProfessional).toEqual(null);
     });
   });
 });
