@@ -6,9 +6,9 @@
 + [ ] delete
 
 # Professionals
-+ [ ] put
-+ [ ] Delete
 + [ ] Should list total profit 
++ [x] put
++ [x] Delete
 
 # Products
 + [ ] put
