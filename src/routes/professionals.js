@@ -78,15 +78,13 @@ export default (server) => {
       const errors = {};
 
       // Check if name is duplicated
-      await Professional.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } }, (err, professional) => {
-        if (err) {
-          throw new Error('error when finding a professional with this name');
-        }
-        if (professional) {
-          errors.name = NOT_UNIQUE;
-        }
-        return false;
-      });
+      await Professional
+        .findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } })
+        .then((professional) => {
+          if (professional) {
+            errors.name = NOT_UNIQUE;
+          }
+        });
 
       if (!name) {
         errors.name = BLANK;

@@ -117,6 +117,49 @@ class ProductsController {
       errors,
     };
   }
+
+  async update(product) {
+    const { name, measure_unit, _id } = product;
+    const errors = {};
+
+    const validMeasureUnits = [
+      'ml', 'unit', 'mg',
+    ];
+
+    if (!validMeasureUnits.includes(measure_unit)) {
+      errors.measure_unit = INVALID;
+    }
+
+    if (!measure_unit) {
+      errors.measure_unit = BLANK;
+    }
+
+    // Check if name is duplicated
+    await Product.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } }, (err, product) => {
+      if (err) {
+        return console.error('error when finding a product with this name');
+      }
+      if (product && product._id.toString() !== _id) {
+        errors.name = NOT_UNIQUE;
+      }
+    });
+
+    if (!name) {
+      errors.name = BLANK;
+    }
+
+    if (!Object.keys(errors).length) {
+      const productUpdated = await Product
+        .findByIdAndUpdate(_id, { $set: { name, measure_unit } }, { new: true });
+      return {
+        ...productUpdated.toObject(),
+      };
+    }
+
+    return {
+      errors,
+    };
+  }
 }
 
 export default ProductsController;

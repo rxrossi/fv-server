@@ -3,6 +3,12 @@ import ProductsController from './Products';
 import ProductModel from '../models/Products';
 import StockModel from '../models/Stock';
 
+const errLogger = (err) => {
+  if (err) {
+    console.error(err);
+  }
+};
+
 describe('ProductsController', () => {
   let sut;
   beforeEach((done) => {
@@ -12,96 +18,110 @@ describe('ProductsController', () => {
   });
 
   beforeEach((done) => {
-    // Delete all products
-    ProductModel.deleteMany({}, (err) => {
-      if (err) {
-        console.error('an error', err);
-      }
-      done();
-    });
+    ProductModel.deleteMany({}, errLogger).then(() =>
+      StockModel.deleteMany({}, errLogger)).then(() => done());
   });
 
   afterEach((done) => {
-    // Delete all products
-    ProductModel.deleteMany({}, (err) => {
-      if (err) {
-        console.error('an error', err);
-      }
-      done();
-    });
+    ProductModel.deleteMany({}, errLogger).then(() =>
+      StockModel.deleteMany({}, errLogger)).then(() => done());
   });
 
-  beforeEach((done) => {
-    // Delete all stock
-    StockModel.deleteMany({}, (err) => {
-      if (err) {
-        console.error('an error', err);
-      }
-      done();
-    });
-  });
+  describe('GET', () => {
+    it('returns getAll when there are products', async () => {
+      // Prepare
+      const ox = new ProductModel({ name: 'OX', measure_unit: 'ml' });
 
-  afterEach((done) => {
-    // Delete all stock
-    StockModel.deleteMany({}, (err) => {
-      if (err) {
-        console.error('an error', err);
-      }
-      done();
-    });
-  });
-
-  it('returns getAll when there are products', async () => {
-    // Prepare
-    const ox = new ProductModel({ name: 'OX', measure_unit: 'ml' });
-
-    await ox.save((err, product) => {
-      if (err) {
-        console.error(err);
-      }
-      const entryOne = new StockModel({
-        product: product._id,
-        date: '10 27 2017',
-        qty: 1,
-        price_per_unit: 10,
-      });
-
-      entryOne.save((error) => {
-        if (error) {
-          console.error('entry', error);
+      await ox.save((err, product) => {
+        if (err) {
+          console.error(err);
         }
+        const entryOne = new StockModel({
+          product: product._id,
+          date: '10 27 2017',
+          qty: 1,
+          price_per_unit: 10,
+        });
+
+        entryOne.save((error) => {
+          if (error) {
+            console.error('entry', error);
+          }
+        });
       });
+
+      sut = new ProductsController();
+
+      // Act
+      const products = await sut.getAll();
+
+      // Assert
+      expect(products[0].price_per_unit).toBe(10);
+      expect(products[0].quantity).toBe(1);
+      expect(products[0].avgPriceFiveLast).toBe(10);
+    });
+  });
+
+  describe('CREATE', () => {
+    it('creates a product', async () => {
+      const ox = { name: 'OX', measure_unit: 'ml' };
+
+      sut = new ProductsController();
+
+      const { product } = await sut.create(ox);
+
+      expect(product.name).toEqual(ox.name);
     });
 
-    sut = new ProductsController();
+    it('cannot create a product with duplicated name', async () => {
+      const ox = { name: 'OX', measure_unit: 'ml' };
 
-    // Act
-    const products = await sut.getAll();
+      sut = new ProductsController();
 
-    // Assert
-    expect(products[0].price_per_unit).toBe(10);
-    expect(products[0].quantity).toBe(1);
-    expect(products[0].avgPriceFiveLast).toBe(10);
+      await sut.create(ox);
+
+      const { errors } = await sut.create(ox);
+
+      expect(errors.name).toEqual('NOT_UNIQUE');
+    });
   });
 
-  it('creates a product', async () => {
-    const ox = { name: 'OX', measure_unit: 'ml' };
+  describe('Update', () => {
+    it('can update a product', async () => {
+      // Prepare
+      const ox = new ProductModel({ name: 'OX', measure_unit: 'ml' });
 
-    sut = new ProductsController();
+      await ox.save((err, product) => {
+        if (err) {
+          console.error(err);
+        }
+        const entryOne = new StockModel({
+          product: product._id,
+          date: '10 27 2017',
+          qty: 1,
+          price_per_unit: 10,
+        });
 
-    const { product, errors } = await sut.create(ox);
+        entryOne.save((error) => {
+          if (error) {
+            console.error('entry', error);
+          }
+        });
+      });
 
-    expect(product.name).toEqual(ox.name);
-  });
+      const updatedOx = {
+        _id: ox._id,
+        name: 'updatedOX',
+        measure_unit: 'ml',
+      };
 
-  it('cannot create a product with duplicated name', async () => {
-    const ox = { name: 'OX', measure_unit: 'ml' };
+      sut = new ProductsController();
 
-    sut = new ProductsController();
+      // Act
+      const product = await sut.update(updatedOx);
 
-    await sut.create(ox);
-    const { product, errors } = await sut.create(ox);
-
-    expect(errors.name).toEqual('NOT_UNIQUE');
+      // Assert
+      expect(product.name).toEqual('updatedOX');
+    });
   });
 });
