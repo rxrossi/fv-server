@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import Stock from '../models/Stock';
+import mongoose_delete from 'mongoose-delete';
 
 export function addPrice(product) {
   if (!product.stock.length) {
@@ -48,9 +48,11 @@ export function addAvgPriceFiveLast(product) {
 }
 
 const productSchema = new Schema({
-  name: { type: String, unique: true },
+  name: String,
   measure_unit: String,
 });
+
+productSchema.plugin(mongoose_delete);
 
 productSchema.virtual('stock', {
   ref: 'Stock',

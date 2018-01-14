@@ -9,10 +9,14 @@
 + [ ] Should list total profit 
 + [x] put
 + [x] Delete
++ [ ] change delete to soft delete
+
+# Clients
++ [ ] change delete to soft delete
 
 # Products
-+ [ ] put
-+ [ ] Delete
++ [X] put
++ [X] Delete (soft)
 
 # Purchases
 + [ ] put

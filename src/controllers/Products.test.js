@@ -118,10 +118,43 @@ describe('ProductsController', () => {
       sut = new ProductsController();
 
       // Act
-      const product = await sut.update(updatedOx);
+      const { product } = await sut.update(updatedOx);
 
       // Assert
       expect(product.name).toEqual('updatedOX');
+    });
+  });
+  describe('DELETE', () => {
+    it('marks a product as deleted', async () => {
+      // Prepare
+      const ox = new ProductModel({ name: 'OX', measure_unit: 'ml' });
+
+      await ox.save((err, product) => {
+        if (err) {
+          console.error(err);
+        }
+        const entryOne = new StockModel({
+          product: product._id,
+          date: '10 27 2017',
+          qty: 1,
+          price_per_unit: 10,
+        });
+
+        entryOne.save((error) => {
+          if (error) {
+            console.error('entry', error);
+          }
+        });
+      });
+
+      sut = new ProductsController();
+
+      // Act
+      await sut.delete(ox._id);
+      const productsAfterDelete = await sut.getAll();
+
+      // Assert
+      expect(productsAfterDelete).toEqual([]);
     });
   });
 });

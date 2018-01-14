@@ -24,7 +24,7 @@ const addSourceOrDestination = (entry) => {
 class ProductsController {
   getAll() {
     return Product
-      .find({})
+      .find({ $or: [{ deleted: false }, { deleted: undefined }] })
       .collation({ locale: 'en', strength: 2 }).sort({ name: 1 })
       .populate({
         path: 'stock',
@@ -74,8 +74,8 @@ class ProductsController {
       .then(product => addAvgPriceFiveLast(product));
   }
 
-  async create(product) {
-    const { name, measure_unit } = product;
+  async create(body) {
+    const { name, measure_unit } = body;
     const errors = {};
 
     const validMeasureUnits = [
@@ -106,7 +106,7 @@ class ProductsController {
 
     if (!Object.keys(errors).length) {
       const product = new Product({ name, measure_unit });
-      await product.save();
+      const t1 = await product.save(err => true);
 
       return {
         product,
@@ -135,11 +135,11 @@ class ProductsController {
     }
 
     // Check if name is duplicated
-    await Product.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } }, (err, product) => {
+    await Product.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } }, (err, prod) => {
       if (err) {
         return console.error('error when finding a product with this name');
       }
-      if (product && product._id.toString() !== _id) {
+      if (prod && prod._id.toString() !== _id) {
         errors.name = NOT_UNIQUE;
       }
     });
@@ -152,13 +152,21 @@ class ProductsController {
       const productUpdated = await Product
         .findByIdAndUpdate(_id, { $set: { name, measure_unit } }, { new: true });
       return {
-        ...productUpdated.toObject(),
+        product: productUpdated.toObject(),
       };
     }
 
     return {
       errors,
     };
+  }
+
+  async delete(id) {
+    const product = await Product.findById(id);
+    product.name = `${product.name} deativated at ${Date.now()}`;
+    await product.save();
+    await product.delete();
+    return product;
   }
 }
 
