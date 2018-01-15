@@ -146,5 +146,16 @@ describe('Purchases Controller', () => {
         price_per_unit: products[1].total_price / products[1].qty,
       });
     });
+
+    it('removes a purchase when requested', async () => {
+      const exampleId = purchaseExample._id.toString();
+      // Act
+      await sut.delete(purchaseExample._id);
+
+      // Assert
+      expect(await sut.getOne(exampleId)).toBe(null);
+      const stockEntries = await StockModel.find({ purchase: purchaseExample._id });
+      expect(stockEntries).toEqual([]);
+    });
   });
 });

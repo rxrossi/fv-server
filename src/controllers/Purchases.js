@@ -122,7 +122,18 @@ export default class Purchases {
     };
   }
 
-  getOne(id) {
+  async delete(id) {
+    await StockModel.deleteMany({ purchase: id });
+    await this.Model.findByIdAndRemove(id);
+  }
+
+  async getOne(id) {
+    const purchase = await this.Model.findById(id);
+
+    if (!purchase) {
+      return null;
+    }
+
     return this.Model.findById(id)
       .populate({
         path: 'stockEntries',
@@ -131,8 +142,8 @@ export default class Purchases {
           select: 'name measure_unit',
         },
       })
-      .then(purchase => purchase.toObject())
-      .then(purchase => addTotalPrice([purchase])[0]);
+      .then(x => x.toObject())
+      .then(x => addTotalPrice([x])[0]);
   }
 
   getAll() {
