@@ -37,8 +37,9 @@ function hasProductEntriesErrors(products) {
       errors.total_price = NOT_POSITIVE;
       errorCount += 1;
     }
-    return errorCount ? array : null;
+    return errors;
   });
+  return errorCount ? array : null;
 }
 
 function hasErrors({ date, seller, products = [] }) {
@@ -70,7 +71,7 @@ export default class Purchases {
   async create(body) {
     const errors = hasErrors(body);
     if (errors) {
-      return errors;
+      return { errors };
     }
     const purchase = new this.Model(body);
     const { id: purchase_id } = await purchase.save();
