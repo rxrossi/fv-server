@@ -38,25 +38,18 @@ export default class StockController {
   }
 
   async create(postBody) {
-    let price_per_unit;
-    if (postBody.sale) { // Means it is a sale
-      const productBeingSold = await products.getOne(postBody.product);
-      price_per_unit = productBeingSold.price_per_unit;
-    } else {
-      price_per_unit = postBody.total_price / postBody.qty;
-    }
+    const price_per_unit =
+    postBody.sale ?
+      await products.getOne(postBody.product).then(x => x.price_per_unit) :
+      postBody.total_price / postBody.qty;
 
-    const entry = new Stock({
+    return new Stock({
       product: postBody.product,
       purchase: postBody.purchase,
       sale: postBody.sale,
       qty: postBody.qty,
       price_per_unit,
       date: postBody.date,
-    });
-
-    await entry.save();
-
-    return entry;
+    }).save();
   }
 }

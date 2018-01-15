@@ -35,6 +35,66 @@ function calcProfitPerHour(sale) {
   };
 }
 
+function hasProductEntriesErrors(products) {
+  let errorCount = 0;
+
+  const array = products.map(({ product, qty }) => {
+    const errors = {};
+    if (!product) {
+      errors.product = BLANK;
+      errorCount += 1;
+    }
+    if (!(qty > 0)) {
+      errors.qty = NOT_POSITIVE;
+      errorCount += 1;
+    }
+    return errors;
+  });
+  return errorCount ? array : null;
+}
+
+function hasErrors({
+  name,
+  client,
+  professional,
+  start_time,
+  end_time,
+  payment_method,
+  value,
+  products = [],
+}) {
+  const errors = {};
+
+  if (!name) {
+    errors.name = BLANK;
+  }
+  if (!client) {
+    errors.client = BLANK;
+  }
+  if (!professional) {
+    errors.professional = BLANK;
+  }
+  if (!start_time) {
+    errors.start_time = BLANK;
+  }
+  if (!end_time) {
+    errors.end_time = BLANK;
+  }
+  if (!payment_method) {
+    errors.payment_method = BLANK;
+  }
+  if (!(value > 0)) {
+    errors.value = NOT_POSITIVE;
+  }
+
+  const productErrors = hasProductEntriesErrors(products);
+  if (productErrors) {
+    errors.products = productErrors;
+  }
+
+  return (Object.keys(errors).length || errors.products) ? errors : null;
+}
+
 class Sales {
   constructor() {
     this.Model = SalesModel;
@@ -82,62 +142,12 @@ class Sales {
       end_time,
       payment_method,
       value,
-      products,
+      products = [],
     } = postBody;
 
-    // error cheching
-    const errors = {};
-    // for name
-    if (!name) {
-      errors.name = BLANK;
-    }
-    // client
-    if (!client) {
-      errors.client = BLANK;
-    }
-    // professional
-    if (!professional) {
-      errors.professional = BLANK;
-    }
-    // start_time
-    if (!start_time) {
-      errors.start_time = BLANK;
-    }
-    // end_time
-    if (!end_time) {
-      errors.end_time = BLANK;
-    }
-    // payment_method
-    if (!payment_method) {
-      errors.payment_method = BLANK;
-    }
-    // value
-    if (!(value > 0)) {
-      errors.value = NOT_POSITIVE;
-    }
-
-    const errorOfProducts = [];
-    let productErrorsCount = 0;
-    products && products.forEach(({ product, qty }) => {
-      const errors = {};
-      if (!product) {
-        errors.product = BLANK;
-        productErrorsCount += 1;
-      }
-      if (!(qty > 0)) {
-        errors.qty = NOT_POSITIVE;
-        productErrorsCount += 1;
-      }
-      errorOfProducts.push(errors);
-    });
-
-    if (Object.keys(errors).length || productErrorsCount) {
-      return {
-        errors: {
-          ...errors,
-          products: errorOfProducts,
-        },
-      };
+    const errors = hasErrors(postBody);
+    if (errors) {
+      return { errors };
     }
 
     const paymentFullInfo = {
@@ -157,16 +167,22 @@ class Sales {
       payment: paymentFullInfo,
     });
 
+
     const { id: sale_id } = await sale.save();
 
-    products && products.map(item =>
-      stock.create({
+
+    if (products.length > 0) {
+      const promises = products.map(item => Promise.resolve(stock.create({
         qty: item.qty,
         product: item.product,
         sale: sale_id,
         date: start_time,
-      }));
-    await stock.getAll(); // ungly hack because the map for stock.create()
+      })));
+
+      await Promise.all(promises);
+    }
+
+    // await stock.getAll(); // ungly hack because the map for stock.create()
     // is not being waited to be completed without it
 
     return {

@@ -20,13 +20,21 @@ const genericErrorHandler = (err) => {
   }
 };
 
+const cleanUpDB = () =>
+  PurchasesModel.deleteMany({}, genericErrorHandler)
+    .then(() => ProductModel.deleteMany({}, genericErrorHandler))
+    .then(() => ClientModel.deleteMany({}, genericErrorHandler))
+    .then(() => ProfessionalModel.deleteMany({}, genericErrorHandler))
+    .then(() => StockModel.deleteMany({}, genericErrorHandler))
+    .then(() => SalesModel.deleteMany({}, genericErrorHandler));
+
+
 describe('Sales routes', () => {
-  let server = 'pre';
+  let server;
   let ox;
   let shampoo;
   let client1;
   let professional1;
-  let purchase1;
 
   beforeEach(async () => { // booting server
     server = await configureServer()
@@ -35,26 +43,13 @@ describe('Sales routes', () => {
         return sv;
       });
 
-    await PurchasesModel.deleteMany({}, genericErrorHandler);
-    await ProductModel.deleteMany({}, genericErrorHandler);
-    await ClientModel.deleteMany({}, genericErrorHandler);
-    await ProfessionalModel.deleteMany({}, genericErrorHandler);
-    await StockModel.deleteMany({}, genericErrorHandler);
-    await SalesModel.deleteMany({}, genericErrorHandler);
+    await cleanUpDB();
 
-    client1 = new ClientModel({ name: 'Mary', phone: '999' });
-    client1.save();
+    client1 = await new ClientModel({ name: 'Mary', phone: '999' }).save();
+    professional1 = await new ProfessionalModel({ name: 'Carl' }).save();
+    ox = await new ProductModel({ name: 'OX', measure_unit: 'ml' }).save();
+    shampoo = await new ProductModel({ name: 'shampoo', measure_unit: 'ml' }).save();
 
-    professional1 = new ProfessionalModel({ name: 'Carl' });
-    professional1.save();
-
-    ox = new ProductModel({ name: 'OX', measure_unit: 'ml' });
-    ox.save();
-
-    shampoo = new ProductModel({ name: 'shampoo', measure_unit: 'ml' });
-    shampoo.save();
-
-    // Register purchase of OX and Shampoo, the price will be used bellow
     const purchaseBody = {
       products: [
         { id: ox._id, qty: 500, total_price: 90 },
@@ -65,16 +60,11 @@ describe('Sales routes', () => {
     };
 
     const purchaseController = new PurchasesController();
-    purchase1 = await purchaseController.create(purchaseBody);
+    await purchaseController.create(purchaseBody);
   });
 
   afterEach(async () => { // stoping server
-    await SalesModel.deleteMany({}, genericErrorHandler);
-    await ProductModel.deleteMany({}, genericErrorHandler);
-    await ProfessionalModel.deleteMany({}, genericErrorHandler);
-    await ClientModel.deleteMany({}, genericErrorHandler);
-    await StockModel.deleteMany({}, genericErrorHandler);
-
+    await cleanUpDB();
     await server.stop();
   });
 
@@ -165,9 +155,6 @@ describe('Sales routes', () => {
 
   describe('POST route', () => {
     it('records a POST request on database', async () => {
-      // await StockModel.deleteMany({}, genericErrorHandler);
-      // await PurchasesModel.deleteMany({}, genericErrorHandler);
-
       const postBody = {
         name: 'service one',
         client: client1._id,
@@ -193,7 +180,8 @@ describe('Sales routes', () => {
         body: JSON.stringify(postBody),
       }).then(res => res.json());
 
-      expect(response.code).toBe(201);
+
+      expect(response.code).toBe(200);
 
       const joiGetBody = Joi.object().keys({
         _id: Joi.string(),
@@ -254,7 +242,7 @@ describe('Sales routes', () => {
         body: JSON.stringify(postBody),
       }).then(res => res.json());
 
-      expect(response.code).toBe(201);
+      expect(response.code).toBe(200);
 
       const joiGetBody = Joi.object().keys({
         _id: Joi.string(),
