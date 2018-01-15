@@ -1,76 +1,81 @@
-import PurchasesModel from '../models/Purchases';
-import Products from '../models/Products';
+import Purchase from '../models/Purchases';
 import StockController from '../controllers/Stock';
-import { NOT_UNIQUE, BLANK, INVALID, NOT_POSITIVE } from '../errors';
+import { BLANK, NOT_POSITIVE } from '../errors';
 
 const stock = new StockController();
 
-function addPriceToPurchases(purchases) {
+function addTotalPrice(purchases) {
   return purchases.map(purchase => ({
     ...purchase,
-    price: purchase.stockEntries.reduce((prev, entry) => prev + (entry.price_per_unit * entry.qty), 0),
+    price: purchase.stockEntries
+      .reduce((prev, entry) => prev + (entry.price_per_unit * entry.qty), 0),
   }));
 }
 
-export default class Purchases {
-  async create({ date, seller, products }) {
+function hasProductEntriesErrors(products) {
+  let errorCount = 0;
+
+  const array = products.map(({ id, qty, total_price }) => {
     const errors = {};
-    const purchase = new PurchasesModel({
-      date,
-      seller,
-    });
-
-    // error cheching
-    // for seller
-    if (!seller) {
-      errors.seller = BLANK;
+    if (!id) {
+      errors.id = BLANK;
+      errorCount += 1;
     }
-    // date
-    if (!date) {
-      errors.date = BLANK;
+    if (!(qty > 0)) {
+      errors.qty = NOT_POSITIVE;
+      errorCount += 1;
     }
-
-    const errorOfProducts = [];
-    let productErrorsCount = 0;
-    products && products.forEach(({ id, qty, total_price }) => {
-      const errors = {};
-      if (!id) {
-        errors.id = BLANK;
-        productErrorsCount += 1;
-      }
-      if (!(qty > 0)) {
-        errors.qty = NOT_POSITIVE;
-        productErrorsCount += 1;
-      }
-      if (!(total_price > 0)) {
-        errors.total_price = NOT_POSITIVE;
-        productErrorsCount += 1;
-      }
-      errorOfProducts.push(errors);
-    });
-
-    if (Object.keys(errors).length || productErrorsCount) {
-      return {
-        errors: {
-          ...errors,
-          products: errorOfProducts,
-        },
-      };
+    if (!(total_price > 0)) {
+      errors.total_price = NOT_POSITIVE;
+      errorCount += 1;
     }
+    return errorCount ? array : null;
+  });
+}
 
+function hasSalesErrors({ date, seller, products = [] }) {
+  const errors = {};
+  if (!seller) {
+    errors.seller = BLANK;
+  }
+  if (!date) {
+    errors.date = BLANK;
+  }
+  if (!products.length) {
+    errors.emptyProducts = !products.length;
+  }
+
+  const productErrors = hasProductEntriesErrors(products);
+  if (productErrors) {
+    errors.products = productErrors;
+  }
+
+
+  return (Object.keys(errors).length || errors.products) ? errors : null;
+}
+
+export default class Purchases {
+  constructor(Model = Purchase) {
+    this.Model = Model;
+  }
+
+  async create(body) {
+    const errors = hasSalesErrors(body);
+    if (errors) {
+      return errors;
+    }
+    const purchase = new this.Model(body);
     const { id: purchase_id } = await purchase.save();
 
-    products && products.map(async (item) => {
+    body.products.map(async (item) => {
       await stock.create({
         product: item.id,
         purchase: purchase_id,
         qty: item.qty,
         total_price: item.total_price,
-        date,
+        date: body.date,
       });
     });
-
-    const stockItems = await stock.getAll();
 
     return {
       purchase: await this.getOne(purchase_id),
@@ -78,7 +83,7 @@ export default class Purchases {
   }
 
   getOne(id) {
-    return PurchasesModel.findById(id)
+    return this.Model.findById(id)
       .populate({
         path: 'stockEntries',
         populate: {
@@ -87,11 +92,11 @@ export default class Purchases {
         },
       })
       .then(purchase => purchase.toObject())
-      .then(purchase => addPriceToPurchases([purchase])[0]);
+      .then(purchase => addTotalPrice([purchase])[0]);
   }
 
   getAll() {
-    return PurchasesModel
+    return this.Model
       .find({})
       .sort({ date: 'descending' })
       .populate({
@@ -102,6 +107,6 @@ export default class Purchases {
         },
       })
       .then(purchases => purchases.map(purchase => purchase.toObject()))
-      .then(purchases => addPriceToPurchases(purchases));
+      .then(purchases => addTotalPrice(purchases));
   }
 }
