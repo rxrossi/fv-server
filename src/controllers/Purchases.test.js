@@ -108,27 +108,43 @@ describe('Purchases Controller', () => {
           { id: shampoo._id, qty: 1000, total_price: 40 },
         ],
         seller: 'Company one',
-        date: Date.now(),
+        date: new Date(),
       };
-      purchaseExample = await sut.create(postBody);
+      purchaseExample = await sut.create(postBody).then(({ purchase }) => purchase);
       done();
     });
 
     it('correctly update a sale', async () => {
       // Prepare
       const putBody = {
-        ...purchaseExample,
+        _id: purchaseExample._id,
         seller: 'Company two',
+        date: new Date(),
         products: [
           { id: shampoo._id, qty: 1000, total_price: 40 },
           { id: cape._id, qty: 1, total_price: 1 },
         ],
       };
       // Act
-      const updatedPurchase = await sut.update(putBody);
+      const { purchase: updatedPurchase } = await sut.update(putBody);
 
       // Assert
-      expect(updatedPurchase).toMatchObject(putBody);
+      const { seller, products, date } = putBody;
+      expect(updatedPurchase.seller).toEqual(seller);
+      expect(updatedPurchase.date).toEqual(date);
+      expect(updatedPurchase.stockEntries.length).toBe(2);
+
+      expect(updatedPurchase.stockEntries[0]).toMatchObject({
+        product: { name: shampoo.name },
+        qty: products[0].qty,
+        price_per_unit: products[0].total_price / products[0].qty,
+      });
+
+      expect(updatedPurchase.stockEntries[1]).toMatchObject({
+        product: { name: cape.name },
+        qty: products[1].qty,
+        price_per_unit: products[1].total_price / products[1].qty,
+      });
     });
   });
 });

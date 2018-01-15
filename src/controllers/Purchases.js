@@ -1,6 +1,14 @@
 import Purchase from '../models/Purchases';
-import StockController from '../controllers/Stock';
+import StockController from './Stock';
+import StockModel from '../models/Stock';
 import { BLANK, NOT_POSITIVE } from '../errors';
+
+const errLogger = (err) => {
+  if (err) {
+    // eslint-disable-next-line
+    console.error(err)
+  }
+};
 
 const stock = new StockController();
 
@@ -33,7 +41,7 @@ function hasProductEntriesErrors(products) {
   });
 }
 
-function hasSalesErrors({ date, seller, products = [] }) {
+function hasErrors({ date, seller, products = [] }) {
   const errors = {};
   if (!seller) {
     errors.seller = BLANK;
@@ -60,7 +68,7 @@ export default class Purchases {
   }
 
   async create(body) {
-    const errors = hasSalesErrors(body);
+    const errors = hasErrors(body);
     if (errors) {
       return errors;
     }
@@ -79,6 +87,38 @@ export default class Purchases {
 
     return {
       purchase: await this.getOne(purchase_id),
+    };
+  }
+
+  async update({
+    _id, seller, date, products,
+  }) {
+    const errors = hasErrors({
+      _id, seller, date, products,
+    });
+    if (errors) {
+      return {
+        errors,
+      };
+    }
+
+    // update purchase model
+    await this.Model.findByIdAndUpdate(_id, { $set: { seller, date } }, { new: true });
+    // delete all stock entries related to this purchase
+    await StockModel.deleteMany({ purchase: _id });
+    // create new entries based on body.products
+    products.map(async (item) => {
+      await stock.create({
+        product: item.id,
+        purchase: _id,
+        qty: item.qty,
+        total_price: item.total_price,
+        date,
+      });
+    });
+
+    return {
+      purchase: await this.getOne(_id),
     };
   }
 
