@@ -327,7 +327,7 @@ describe('Sales routes', () => {
     });
   });
 
-  describe('PUT Route', () => {
+  describe('PUT and DELETE routes', () => {
     let saleId;
     let postBody;
 
@@ -355,6 +355,7 @@ describe('Sales routes', () => {
         method: 'POST',
         body: JSON.stringify(postBody),
       }).then(res => res.json());
+
       saleId = response.body.id;
     });
 
@@ -377,6 +378,21 @@ describe('Sales routes', () => {
       expect(response.body.stockEntries.length).toBe(1);
       expect(response.body.stockEntries[0].product.name).toBe(cape.name);
       expect(response.body.name).toEqual('service two');
+    });
+
+    it('can delete a sale', async () => {
+      // Act
+      const response = await fetch(SALES_URL, {
+        method: 'DELETE',
+        body: JSON.stringify(saleId),
+      }).then(res => res.json());
+
+      // Assert
+      expect(response.code).toBe(204);
+
+      const salesController = new SalesController();
+      const sale = await salesController.getOne(saleId);
+      expect(sale).toEqual(null);
     });
   });
 });

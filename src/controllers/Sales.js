@@ -128,10 +128,10 @@ class Sales {
       })
       .populate('client')
       .populate('professional')
-      .then(sale => sale.toObject())
-      .then(sale => calcProfit(sale))
-      .then(sale => calcSpentTime(sale))
-      .then(sale => calcProfitPerHour(sale));
+      .then(sale => (sale ? sale.toObject() : null))
+      .then(sale => (sale ? calcProfit(sale) : null))
+      .then(sale => (sale ? calcSpentTime(sale) : null))
+      .then(sale => (sale ? calcProfitPerHour(sale) : null));
   }
 
   async update(postBody) {
@@ -173,10 +173,7 @@ class Sales {
     await this.Model.findByIdAndUpdate(id, { $set: saleFields }, { new: true });
 
     await StockModel.deleteMany({ sale: id.toString() });
-    // const stockEntries = await StockModel.find({ sale: id });
-    // console.log(stockEntries);
 
-    // console.log('a');
     if (products.length > 0) {
       const promises = products.map(item => Promise.resolve(stock.create({
         qty: item.qty,
@@ -243,12 +240,15 @@ class Sales {
       await Promise.all(promises);
     }
 
-    // await stock.getAll(); // ungly hack because the map for stock.create()
-    // is not being waited to be completed without it
-
     return {
       sale: await this.getOne(sale_id),
     };
+  }
+
+  async delete(id) {
+    await this.Model.findByIdAndRemove(id);
+    await StockModel.deleteMany({ sale: id });
+    return true;
   }
 }
 

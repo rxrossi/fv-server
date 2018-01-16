@@ -16,6 +16,23 @@ export default (server) => {
   });
 
   server.route({
+    method: 'DELETE',
+    path: '/sales',
+    handler: async (req, res) => {
+      const { errors } = await controller.delete(req.payload);
+      if (errors) {
+        return res({
+          code: 422,
+          errors,
+        });
+      }
+      return res({
+        code: 204,
+      });
+    },
+  });
+
+  server.route({
     method: 'PUT',
     path: '/sales',
     handler: async (req, res) => {
