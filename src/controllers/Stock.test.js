@@ -155,9 +155,8 @@ describe('StockController', () => {
         name: 'service one',
         client: client1._id,
         professional: professional1._id,
-        date: '2017-12-07',
-        start_time: '12:00',
-        end_time: '16:00',
+        start_time: new Date(2018, 1, 1, 10, 0),
+        end_time: new Date(2018, 1, 1, 14, 0),
         payment_method: 'money',
         value: 300,
         products: [
