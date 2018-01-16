@@ -16,6 +16,24 @@ export default (server) => {
   });
 
   server.route({
+    method: 'PUT',
+    path: '/sales',
+    handler: async (req, res) => {
+      const { sale, errors } = await controller.update(req.payload);
+      if (errors) {
+        return res({
+          code: 422,
+          errors,
+        });
+      }
+      return res({
+        code: 200,
+        body: sale,
+      });
+    },
+  });
+
+  server.route({
     method: 'POST',
     path: '/sales',
     handler: async (req, res) => {

@@ -33,6 +33,7 @@ describe('Sales routes', () => {
   let server;
   let ox;
   let shampoo;
+  let cape;
   let client1;
   let professional1;
 
@@ -49,11 +50,13 @@ describe('Sales routes', () => {
     professional1 = await new ProfessionalModel({ name: 'Carl' }).save();
     ox = await new ProductModel({ name: 'OX', measure_unit: 'ml' }).save();
     shampoo = await new ProductModel({ name: 'shampoo', measure_unit: 'ml' }).save();
+    cape = await new ProductModel({ name: 'cape', measure_unit: 'unit' }).save();
 
     const purchaseBody = {
       products: [
         { id: ox._id, qty: 500, total_price: 90 },
         { id: shampoo._id, qty: 1000, total_price: 40 },
+        { id: cape._id, qty: 1000, total_price: 10 },
       ],
       seller: 'Company one',
       date: Date.now(),
@@ -321,6 +324,59 @@ describe('Sales routes', () => {
       expect(response.errors).toEqual(expectedErrors);
 
       expect(response.code).toBe(422);
+    });
+  });
+
+  describe('PUT Route', () => {
+    let saleId;
+    let postBody;
+
+    beforeEach(async () => {
+      postBody = {
+        name: 'service one',
+        client: client1._id,
+        professional: professional1._id,
+        start_time: new Date(2017, 11, 7, 10, 0),
+        end_time: new Date(2017, 11, 7, 16, 0),
+        payment_method: 'money',
+        value: 300,
+        products: [
+          {
+            qty: 250,
+            product: ox._id,
+          },
+          {
+            qty: 500,
+            product: shampoo._id,
+          },
+        ],
+      };
+      const response = await fetch(SALES_URL, {
+        method: 'POST',
+        body: JSON.stringify(postBody),
+      }).then(res => res.json());
+      saleId = response.body.id;
+    });
+
+    it('can update a sale', async () => {
+      // Prepare
+      const putBody = {
+        id: saleId,
+        ...postBody,
+        name: 'service two',
+        products: [{ qty: 1, product: cape._id }],
+      };
+
+      // Act
+      const response = await fetch(SALES_URL, {
+        method: 'PUT',
+        body: JSON.stringify(putBody),
+      }).then(res => res.json());
+
+      // Assert
+      expect(response.body.stockEntries.length).toBe(1);
+      expect(response.body.stockEntries[0].product.name).toBe(cape.name);
+      expect(response.body.name).toEqual('service two');
     });
   });
 });

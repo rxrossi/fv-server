@@ -1,4 +1,5 @@
 import SalesModel from '../models/Sales';
+import StockModel from '../models/Stock';
 import StockController from '../controllers/Stock';
 import { BLANK, NOT_POSITIVE } from '../errors';
 
@@ -132,6 +133,66 @@ class Sales {
       .then(sale => calcSpentTime(sale))
       .then(sale => calcProfitPerHour(sale));
   }
+
+  async update(postBody) {
+    const {
+      id,
+      name,
+      client,
+      professional,
+      start_time,
+      end_time,
+      payment_method,
+      value,
+      products = [],
+    } = postBody;
+
+    const errors = hasErrors(postBody);
+
+    if (errors) {
+      return { errors };
+    }
+
+    const paymentFullInfo = {
+      value_liquid: value,
+      value_total: value,
+      method: payment_method,
+      avaiable_at: start_time,
+      discount: 'none',
+    };
+
+    const saleFields = {
+      name,
+      client,
+      professional,
+      start_time,
+      end_time,
+      payment: paymentFullInfo,
+    };
+
+    await this.Model.findByIdAndUpdate(id, { $set: saleFields }, { new: true });
+
+    await StockModel.deleteMany({ sale: id.toString() });
+    // const stockEntries = await StockModel.find({ sale: id });
+    // console.log(stockEntries);
+
+    // console.log('a');
+    if (products.length > 0) {
+      const promises = products.map(item => Promise.resolve(stock.create({
+        qty: item.qty,
+        product: item.product,
+        sale: id.toString(),
+        date: start_time,
+      })));
+
+      await Promise.all(promises);
+    }
+
+    return {
+      sale: await this.getOne(id),
+    };
+  }
+
 
   async create(postBody) {
     const {
