@@ -23,8 +23,12 @@ export const addSourceOrDestination = (entry) => {
 };
 
 export default class StockController {
+  constructor(Model = Stock) {
+    this.Model = Model;
+  }
+
   getAll() {
-    return Stock.find({})
+    return this.Model.find({})
       .populate({
         path: 'sale',
         populate: {
@@ -43,7 +47,7 @@ export default class StockController {
       await products.getOne(postBody.product).then(x => x.price_per_unit) :
       postBody.total_price / postBody.qty;
 
-    return new Stock({
+    return new this.Model({
       product: postBody.product,
       purchase: postBody.purchase,
       sale: postBody.sale,
