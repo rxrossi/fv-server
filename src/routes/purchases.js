@@ -16,6 +16,41 @@ export default (server) => {
   });
 
   server.route({
+    method: 'DELETE',
+    path: '/purchases',
+    handler: async (req, res) => {
+      const { errors } = await controller.delete(req.payload);
+      if (errors) {
+        return res({
+          code: 422,
+          errors,
+        });
+      }
+      return res({
+        code: 204,
+      });
+    },
+  });
+
+  server.route({
+    method: 'PUT',
+    path: '/purchases',
+    handler: async (req, res) => {
+      const { sale, errors } = await controller.update(req.payload);
+      if (errors) {
+        return res({
+          code: 422,
+          errors,
+        });
+      }
+      return res({
+        code: 200,
+        body: sale,
+      });
+    },
+  });
+
+  server.route({
     method: 'POST',
     path: '/purchases',
     handler: async (req, res) => {
