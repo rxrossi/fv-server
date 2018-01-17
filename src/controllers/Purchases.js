@@ -126,6 +126,7 @@ export default class Purchases {
   async delete(id) {
     await StockModel.deleteMany({ purchase: id });
     await this.Model.findByIdAndRemove(id);
+    return true;
   }
 
   async getOne(id) {
