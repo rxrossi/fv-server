@@ -19,10 +19,10 @@
 + [X] Delete (soft)
 
 # Purchases
-+ [ ] put
-+ [ ] Delete
++ [X] put
++ [X] Delete
 
 # Sales
-+ [ ] put
-+ [ ] Delete
++ [X] put
++ [X] Delete
 + [ ] Sales don't really calculate the cost of credit card
