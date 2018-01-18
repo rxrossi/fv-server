@@ -63,7 +63,7 @@ export default (server) => {
       }
 
       return res({
-        code: 201,
+        code: 200,
         body: purchase,
       });
     },

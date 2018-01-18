@@ -103,7 +103,7 @@ export default (server) => {
         const client = new Client(req.payload);
         client.save();
         return res({
-          code: 201,
+          code: 200,
           body: client,
         });
       }

@@ -94,7 +94,7 @@ export default (server) => {
         const professional = new Professional(req.payload);
         professional.save();
         return res({
-          code: 201,
+          code: 200,
           body: professional,
         });
       }
