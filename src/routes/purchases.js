@@ -36,7 +36,7 @@ export default (server) => {
     method: 'PUT',
     path: '/purchases',
     handler: async (req, res) => {
-      const { sale, errors } = await controller.update(req.payload);
+      const { purchase, errors } = await controller.update(req.payload);
       if (errors) {
         return res({
           code: 422,
@@ -45,7 +45,7 @@ export default (server) => {
       }
       return res({
         code: 200,
-        body: sale,
+        body: purchase,
       });
     },
   });
