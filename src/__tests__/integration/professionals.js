@@ -78,7 +78,7 @@ describe('Professionals Route', () => {
       expect(afterList.length).toBe(1);
       expect(afterList[0].name).toEqual(professionalExample.name);
 
-      expect(res.code).toEqual(201); // 201 means created
+      expect(res.code).toEqual(200);
       expect(res.body.name).toEqual(professionalExample.name);
     });
 
