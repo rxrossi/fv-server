@@ -6,6 +6,9 @@ import ClientsRoutes from './routes/clients';
 import ProfessionalsRoutes from './routes/professionals';
 import PurchasesRoutes from './routes/purchases';
 import SalesRoutes from './routes/sales';
+import UsersRoutes from './routes/users';
+import AuthRoute from './routes/auth';
+import AuthCfg from './auth';
 
 export default async () => {
   const server = new Hapi.Server();
@@ -19,11 +22,14 @@ export default async () => {
 
   mongoose.Promise = global.Promise;
 
+  AuthCfg(server);
   ClientsRoutes(server);
   ProductsRoutes(server);
   ProfessionalsRoutes(server);
   PurchasesRoutes(server);
   SalesRoutes(server);
+  UsersRoutes(server);
+  AuthRoute(server);
 
   mongoose.Promise = global.Promise;
 

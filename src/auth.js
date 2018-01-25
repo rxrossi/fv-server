@@ -27,31 +27,5 @@ export default (server) => {
         verifyOptions: { algorithms: ['HS256'] },
       },
     );
-
-    server.auth.default('jwt');
   });
 };
-
-// export default () => {
-//   const opts = {
-//     secretOrKey: jwtSecret,
-//     jwtFromRequest: ExtractJwt.fromAuthHeader(),
-//   };
-
-//   const strategy = new Strategy(opts, (payload, done) => {
-//     Users.findById(payload.id)
-//       .then((user) => {
-//         if (user) {
-//           return done(null, { id: user._id });
-//         }
-//         return done(null, false);
-//       })
-//       .catch(err => done(err, null));
-//   });
-//   passport.use(strategy);
-
-//   return {
-//     initialize: () => passport.initialize(),
-//     authenticate: () => passport.authenticate('jwt', { session: false }),
-//   };
-// };
