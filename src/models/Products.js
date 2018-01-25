@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import mongoose_delete from 'mongoose-delete';
+import mongoTenant from 'mongo-tenant';
 
 export function addPrice(product) {
   if (!product.stock.length) {
@@ -66,5 +67,6 @@ productSchema.virtual('id').get(function () {
 
 productSchema.set('toObject', { getters: true, virtuals: true });
 productSchema.set('toJSON', { getters: true, virtuals: true });
+productSchema.plugin(mongoTenant);
 
 export default mongoose.model('Product', productSchema);

@@ -1,10 +1,9 @@
-import Product, { addPrice, addQuantity, addAvgPriceFiveLast } from '../models/Products';
+import Products, { addPrice, addQuantity, addAvgPriceFiveLast } from '../models/Products';
 import { NOT_UNIQUE, BLANK, INVALID } from '../errors';
 // import { addSourceOrDestination } from '../controllers/Stock';
 
 const addSourceOrDestination = (entry) => {
   const sourceOrDestination = {};
-
 
   if (entry.sale) {
     sourceOrDestination.name = `${entry.sale.name} (${entry.sale.client.name})`;
@@ -22,8 +21,12 @@ const addSourceOrDestination = (entry) => {
 };
 
 class ProductsController {
+  constructor(tenantId) {
+    this.Model = Products.byTenant(tenantId);
+  }
+
   getAll() {
-    return Product
+    return this.Model
       .find({ $or: [{ deleted: false }, { deleted: undefined }] })
       .collation({ locale: 'en', strength: 2 }).sort({ name: 1 })
       .populate({
@@ -53,7 +56,7 @@ class ProductsController {
   }
 
   getOne(id) {
-    return Product
+    return this.Model
       .findById(id)
       .populate({
         path: 'stock',
@@ -91,7 +94,7 @@ class ProductsController {
     }
 
     // Check if name is duplicated
-    await Product.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } }, (err, product) => {
+    await this.Model.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } }, (err, product) => {
       if (err) {
         return console.error('error when finding a product with this name');
       }
@@ -105,7 +108,7 @@ class ProductsController {
     }
 
     if (!Object.keys(errors).length) {
-      const product = new Product({ name, measure_unit });
+      const product = new this.Model({ name, measure_unit });
       const t1 = await product.save(err => true);
 
       return {
@@ -135,7 +138,7 @@ class ProductsController {
     }
 
     // Check if name is duplicated
-    await Product.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } }, (err, prod) => {
+    await this.Model.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } }, (err, prod) => {
       if (err) {
         return console.error('error when finding a product with this name');
       }
@@ -149,7 +152,7 @@ class ProductsController {
     }
 
     if (!Object.keys(errors).length) {
-      const productUpdated = await Product
+      const productUpdated = await this.Model
         .findByIdAndUpdate(_id, { $set: { name, measure_unit } }, { new: true });
       return {
         product: productUpdated.toObject(),
@@ -162,7 +165,7 @@ class ProductsController {
   }
 
   async delete(id) {
-    const product = await Product.findById(id);
+    const product = await this.Model.findById(id);
     product.name = `${product.name} deativated at ${Date.now()}`;
     await product.save();
     await product.delete();
