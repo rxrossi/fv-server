@@ -1,11 +1,13 @@
-import Client from '../models/Clients';
+import Client2 from '../models/Clients';
 import { NOT_UNIQUE, BLANK } from '../errors';
+
 
 export default (server) => {
   server.route({
     method: 'GET',
     path: '/clients',
     handler: async (req, res) => {
+      const Client = Client2.byTenant(req.auth.credentials.id);
       await Client.find()
         .collation({ locale: 'en', strength: 2 }).sort({ name: 1 })
         .then(clients => res({
@@ -23,6 +25,7 @@ export default (server) => {
     method: 'DELETE',
     path: '/clients',
     handler: async (req, res) => {
+      const Client = Client2.byTenant(req.auth.credentials.id);
       await Client.findByIdAndRemove(req.payload)
         .then(() => res({
           code: 204,
@@ -37,6 +40,7 @@ export default (server) => {
     path: '/clients',
     method: 'PUT',
     handler: async (req, res) => {
+      const Client = Client2.byTenant(req.auth.credentials.id);
       const { name, phone, id } = req.payload;
       const errors = {};
 
@@ -79,6 +83,7 @@ export default (server) => {
     path: '/clients',
     method: 'POST',
     handler: async (req, res) => {
+      const Client = Client2.byTenant(req.auth.credentials.id);
       const { name, phone } = req.payload;
       const errors = {};
 

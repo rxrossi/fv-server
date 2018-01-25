@@ -33,6 +33,6 @@ export default async () => {
 
   mongoose.Promise = global.Promise;
 
-  return mongoose.connect('mongodb://localhost/fv', { useMongoClient: true })
+  return mongoose.connect('mongodb://localhost/fv2', { useMongoClient: true })
     .then(() => server);
 };
