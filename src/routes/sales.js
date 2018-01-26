@@ -1,12 +1,11 @@
 import SalesController from '../controllers/Sales';
 
-const controller = new SalesController();
-
 export default (server) => {
   server.route({
     method: 'GET',
     path: '/sales',
     handler: async (req, res) => {
+      const controller = new SalesController(req.auth.credentials.id);
       const sales = await controller.getAll();
       return res({
         code: 200,
@@ -19,6 +18,7 @@ export default (server) => {
     method: 'DELETE',
     path: '/sales',
     handler: async (req, res) => {
+      const controller = new SalesController(req.auth.credentials.id);
       const { errors } = await controller.delete(req.payload);
       if (errors) {
         return res({
@@ -36,6 +36,7 @@ export default (server) => {
     method: 'PUT',
     path: '/sales',
     handler: async (req, res) => {
+      const controller = new SalesController(req.auth.credentials.id);
       const { sale, errors } = await controller.update(req.payload);
       if (errors) {
         return res({
@@ -54,6 +55,7 @@ export default (server) => {
     method: 'POST',
     path: '/sales',
     handler: async (req, res) => {
+      const controller = new SalesController(req.auth.credentials.id);
       const { sale, errors } = await controller.create(req.payload);
       if (errors) {
         return res({

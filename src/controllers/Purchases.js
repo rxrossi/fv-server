@@ -1,16 +1,8 @@
 import Purchase from '../models/Purchases';
 import StockController from './Stock';
-import StockModel from '../models/Stock';
+import StockModelNonTenant from '../models/Stock';
 import { BLANK, NOT_POSITIVE } from '../errors';
 
-const errLogger = (err) => {
-  if (err) {
-    // eslint-disable-next-line
-    console.error(err)
-  }
-};
-
-const stock = new StockController();
 
 function addTotalPrice(purchases) {
   return purchases.map(purchase => ({
@@ -64,8 +56,10 @@ function hasErrors({ date, seller, products = [] }) {
 }
 
 export default class Purchases {
-  constructor(Model = Purchase) {
-    this.Model = Model;
+  constructor(tenantId, Model = Purchase) {
+    this.Model = Model.byTenant(tenantId);
+    this.Stock = new StockController(tenantId);
+    this.StockModel = StockModelNonTenant.byTenant(tenantId);
   }
 
   async create(body) {
@@ -77,7 +71,7 @@ export default class Purchases {
     const { id: purchase_id } = await purchase.save();
 
     body.products.map(async (item) => {
-      await stock.create({
+      await this.Stock.create({
         product: item.id,
         purchase: purchase_id,
         qty: item.qty,
@@ -105,11 +99,11 @@ export default class Purchases {
 
     // update purchase model
     await this.Model.findByIdAndUpdate(_id, { $set: { seller, date } }, { new: true });
-    // delete all stock entries related to this purchase
-    await StockModel.deleteMany({ purchase: _id });
+    // delete all this.Stock entries related to this purchase
+    await this.StockModel.deleteMany({ purchase: _id });
     // create new entries based on body.products
     products.map(async (item) => {
-      await stock.create({
+      await this.Stock.create({
         product: item.id,
         purchase: _id,
         qty: item.qty,
@@ -124,7 +118,7 @@ export default class Purchases {
   }
 
   async delete(id) {
-    await StockModel.deleteMany({ purchase: id });
+    await this.StockModel.deleteMany({ purchase: id });
     await this.Model.findByIdAndRemove(id);
     return true;
   }

@@ -1,4 +1,4 @@
-import Professional from '../models/Professionals';
+import NonTenant from '../models/Professionals';
 import { NOT_UNIQUE, BLANK } from '../errors';
 
 export default (server) => {
@@ -6,6 +6,7 @@ export default (server) => {
     method: 'GET',
     path: '/professionals',
     handler: async (req, res) => {
+      const Professional = NonTenant.byTenant(req.auth.credentials.id);
       await Professional.find()
         .collation({ locale: 'en', strength: 2 }).sort({ name: 1 })
         .then(professionals => res({
@@ -23,6 +24,7 @@ export default (server) => {
     path: '/professionals',
     method: 'PUT',
     handler: async (req, res) => {
+      const Professional = NonTenant.byTenant(req.auth.credentials.id);
       const { name, id } = req.payload;
       const errors = {};
 
@@ -60,6 +62,7 @@ export default (server) => {
     method: 'DELETE',
     path: '/professionals',
     handler: async (req, res) => {
+      const Professional = NonTenant.byTenant(req.auth.credentials.id);
       await Professional.findByIdAndRemove(req.payload)
         .then(() => res({
           code: 204,
@@ -74,6 +77,7 @@ export default (server) => {
     path: '/professionals',
     method: 'POST',
     handler: async (req, res) => {
+      const Professional = NonTenant.byTenant(req.auth.credentials.id);
       const { name } = req.payload;
       const errors = {};
 

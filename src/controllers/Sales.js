@@ -1,10 +1,9 @@
 import SalesModel from '../models/Sales';
 import StockModel from '../models/Stock';
-import StockController from '../controllers/Stock';
+import StockController from './Stock';
 import { BLANK, NOT_POSITIVE } from '../errors';
 
 const pad2 = x => (x > 9 ? x.toString() : `0${x}`);
-const stock = new StockController();
 
 function calcProfit(sale) {
   const costOfProducts = sale.stockEntries
@@ -97,8 +96,10 @@ function hasErrors({
 }
 
 class Sales {
-  constructor() {
-    this.Model = SalesModel;
+  constructor(tenantId) {
+    this.Model = SalesModel.byTenant(tenantId);
+    this.StockModel = StockModel.byTenant(tenantId);
+    this.Stock = new StockController(tenantId);
   }
 
   getAll() {
@@ -172,10 +173,10 @@ class Sales {
 
     await this.Model.findByIdAndUpdate(id, { $set: saleFields }, { new: true });
 
-    await StockModel.deleteMany({ sale: id.toString() });
+    await this.StockModel.deleteMany({ sale: id.toString() });
 
     if (products.length > 0) {
-      const promises = products.map(item => Promise.resolve(stock.create({
+      const promises = products.map(item => Promise.resolve(this.Stock.create({
         qty: item.qty,
         product: item.product,
         sale: id.toString(),
@@ -230,7 +231,7 @@ class Sales {
 
 
     if (products.length > 0) {
-      const promises = products.map(item => Promise.resolve(stock.create({
+      const promises = products.map(item => Promise.resolve(this.Stock.create({
         qty: item.qty,
         product: item.product,
         sale: sale_id,
@@ -247,7 +248,7 @@ class Sales {
 
   async delete(id) {
     await this.Model.findByIdAndRemove(id);
-    await StockModel.deleteMany({ sale: id });
+    await this.StockModel.deleteMany({ sale: id });
     return true;
   }
 }

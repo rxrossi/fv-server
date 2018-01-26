@@ -1,12 +1,11 @@
-import Purchases from '../controllers/Purchases';
-
-const controller = new Purchases();
+import Controller from '../controllers/Purchases';
 
 export default (server) => {
   server.route({
     method: 'GET',
     path: '/purchases',
     handler: async (req, res) => {
+      const controller = new Controller(req.auth.credentials.id);
       const purchases = await controller.getAll();
       return res({
         code: 200,
@@ -19,6 +18,7 @@ export default (server) => {
     method: 'DELETE',
     path: '/purchases',
     handler: async (req, res) => {
+      const controller = new Controller(req.auth.credentials.id);
       const { errors } = await controller.delete(req.payload);
       if (errors) {
         return res({
@@ -36,6 +36,7 @@ export default (server) => {
     method: 'PUT',
     path: '/purchases',
     handler: async (req, res) => {
+      const controller = new Controller(req.auth.credentials.id);
       const { purchase, errors } = await controller.update(req.payload);
       if (errors) {
         return res({
@@ -54,6 +55,7 @@ export default (server) => {
     method: 'POST',
     path: '/purchases',
     handler: async (req, res) => {
+      const controller = new Controller(req.auth.credentials.id);
       const { purchase, errors } = await controller.create(req.payload);
       if (errors) {
         return res({

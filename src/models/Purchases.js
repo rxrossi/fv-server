@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import mongoTenant from 'mongo-tenant';
 
 const purchasesSchema = Schema({
   seller: { type: String, required: true },
@@ -17,5 +18,6 @@ purchasesSchema.virtual('id').get(function () {
 
 purchasesSchema.set('toObject', { getters: true, virtuals: true });
 purchasesSchema.set('toJSON', { getters: true, virtuals: true });
+purchasesSchema.plugin(mongoTenant);
 
 export default mongoose.model('Purchases', purchasesSchema);

@@ -1,11 +1,8 @@
 import Stock from '../models/Stock';
 import Products from '../controllers/Products';
 
-const products = new Products();
-
 export const addSourceOrDestination = (entry) => {
   const sourceOrDestination = {};
-
 
   if (entry.sale) {
     sourceOrDestination.name = `${entry.sale.name} (${entry.sale.client.name})`;
@@ -23,8 +20,9 @@ export const addSourceOrDestination = (entry) => {
 };
 
 export default class StockController {
-  constructor(Model = Stock) {
-    this.Model = Model;
+  constructor(tenantId, Model = Stock) {
+    this.Model = Model.byTenant(tenantId);
+    this.Products = new Products(tenantId);
   }
 
   getAll() {
@@ -44,7 +42,7 @@ export default class StockController {
   async create(postBody) {
     const price_per_unit =
     postBody.sale ?
-      await products.getOne(postBody.product).then(x => x.price_per_unit) :
+      await this.Products.getOne(postBody.product).then(x => x.price_per_unit) :
       postBody.total_price / postBody.qty;
 
 

@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import mongoTenant from 'mongo-tenant';
 import '../models/Purchases';
 import '../models/Sales';
 
@@ -22,5 +23,7 @@ stockSchema.set('toJSON', {
 stockSchema.set('toObject', {
   virtuals: true,
 });
+
+stockSchema.plugin(mongoTenant);
 
 export default mongoose.model('Stock', stockSchema);

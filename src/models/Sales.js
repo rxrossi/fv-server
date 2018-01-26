@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import mongoTenant from 'mongo-tenant';
 // import Product from '../models/Products';
 // import Stock from '../models/Stock';
 // import Client from '../models/Clients';
@@ -31,5 +32,6 @@ salesSchema.virtual('id').get(function () {
 
 salesSchema.set('toObject', { getters: true, virtuals: true });
 salesSchema.set('toJSON', { getters: true, virtuals: true });
+salesSchema.plugin(mongoTenant);
 
 export default mongoose.model('Sales', salesSchema);

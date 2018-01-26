@@ -1,6 +1,5 @@
 import Controller from '../controllers/Products';
 
-
 export default (server) => {
   server.route({
     method: 'GET',
