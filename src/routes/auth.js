@@ -11,7 +11,7 @@ export default (server) => {
       const { email, password } = req.payload;
       await Users.findOne({ email })
         .then((user) => {
-          if (user.isPassCorrect(password, user.password)) {
+          if (user && user.isPassCorrect(password, user.password)) {
             const payload = { id: user._id };
             return res({
               code: 200,
