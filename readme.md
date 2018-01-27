@@ -12,6 +12,11 @@ export MONGODB_URI="mongodb://host/dbname"
 export JWT_SECRET="someRandomString"
 ```
 
+### PORT
+```shell
+export PORT="5001"
+```
+
 ### Installing dependencies
 ```shell
 npm install
