@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "babel src -d build --presets es2015,stage-2",
     "start": "babel-node src/index.js --presets es2015,stage-2",
     "test:unit": "jest src/**/*.test.js --watchAll --runInBand",
     "test:integration": "jest src/__tests__/**/*.js --watchAll --runInBand"
