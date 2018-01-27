@@ -16,7 +16,7 @@ export default async () => {
   const port = process.env.PORT || 5001;
 
   await server.connection({
-    host: 'localhost',
+    host: '0.0.0.0',
     port,
   });
 
