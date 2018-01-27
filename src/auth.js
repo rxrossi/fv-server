@@ -1,7 +1,7 @@
 import hapiAuthJwt from 'hapi-auth-jwt2';
 import Users from './models/Users';
 
-export const jwtSecret = 'a-Random_string_anything';
+export const jwtSecret = process.env.JWT_SECRET || 'a-Random_string_anything';
 
 function validate(decoded, request, callback) {
   Users.findById(decoded.id)

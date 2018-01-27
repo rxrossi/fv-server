@@ -13,9 +13,11 @@ import AuthCfg from './auth';
 export default async () => {
   const server = new Hapi.Server();
 
+  const port = process.env.PORT || 5001;
+
   await server.connection({
     host: 'localhost',
-    port: 5001,
+    port,
   });
 
   server.ext('onPreResponse', corsHeaders);
@@ -33,6 +35,8 @@ export default async () => {
 
   mongoose.Promise = global.Promise;
 
-  return mongoose.connect('mongodb://localhost/fv2', { useMongoClient: true })
+  const mongodbURL = process.env.MONGODB_URI || 'mongodb://localhost/fv2';
+
+  return mongoose.connect(mongodbURL, { useMongoClient: true })
     .then(() => server);
 };
