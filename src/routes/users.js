@@ -1,5 +1,5 @@
 import User from '../models/Users';
-import { NOT_UNIQUE, BLANK } from '../errors';
+import { NOT_UNIQUE, BLANK, UNMATCHED_PW } from '../errors';
 
 export default (server) => {
   server.route({
@@ -7,11 +7,20 @@ export default (server) => {
     method: 'POST',
     config: { auth: false },
     handler: async (req, res) => {
-      const { email, password } = req.payload;
+      const { email, password, confirmPassword } = req.payload;
       const errors = {};
+
+      if (password !== confirmPassword) {
+        errors.password = UNMATCHED_PW;
+        errors.confirmPassword = UNMATCHED_PW;
+      }
 
       if (!password) {
         errors.password = BLANK;
+      }
+
+      if (!confirmPassword) {
+        errors.confirmPassword = BLANK;
       }
 
       // Check if email is duplicated
@@ -26,6 +35,7 @@ export default (server) => {
       if (!email) {
         errors.email = BLANK;
       }
+
 
       if (!Object.keys(errors).length) {
         const user = new User(req.payload);
