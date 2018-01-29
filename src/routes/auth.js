@@ -1,5 +1,5 @@
 import jwt from 'jwt-simple';
-import Users from '../models/Users';
+import User from '../models/User';
 import { jwtSecret } from '../auth';
 
 export default (server) => {
@@ -9,7 +9,7 @@ export default (server) => {
     config: { auth: false },
     handler: async (req, res) => {
       const { email, password } = req.payload;
-      await Users.findOne({ email })
+      await User.findOne({ email })
         .then((user) => {
           if (user && user.isPassCorrect(password, user.password)) {
             const payload = { id: user._id };

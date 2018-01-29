@@ -1,10 +1,10 @@
 import hapiAuthJwt from 'hapi-auth-jwt2';
-import Users from './models/Users';
+import User from './models/User';
 
 export const jwtSecret = process.env.JWT_SECRET || 'a-Random_string_anything';
 
 function validate(decoded, request, callback) {
-  Users.findById(decoded.id)
+  User.findById(decoded.id)
     .then((user) => {
       if (user) {
         return callback(null, true);

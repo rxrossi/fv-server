@@ -1,8 +1,8 @@
 import 'isomorphic-fetch'; /* global fetch */
 import jwt from 'jwt-simple';
 import { jwtSecret } from '../../auth';
-import Client from '../../models/Clients';
-import Users from '../../models/Users';
+import Client from '../../models/Client';
+import User from '../../models/User';
 import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
 
@@ -24,9 +24,9 @@ describe('Clients Route', () => {
       });
 
     await Client.deleteMany({}, errHandler);
-    await Users.deleteMany({}, errHandler);
+    await User.deleteMany({}, errHandler);
 
-    user = new Users({
+    user = new User({
       email: 'user@mail.com',
       password: 'validpass',
     });

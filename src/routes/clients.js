@@ -1,4 +1,4 @@
-import NonTenant from '../models/Clients';
+import NonTenant from '../models/Client';
 import { NOT_UNIQUE, BLANK } from '../errors';
 
 
