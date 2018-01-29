@@ -1,6 +1,5 @@
-import NonTenant from '../models/Client';
+import NonTenant from './model';
 import { NOT_UNIQUE, BLANK } from '../errors';
-
 
 export default (server) => {
   server.route({

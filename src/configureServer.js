@@ -2,7 +2,7 @@ import Hapi from 'hapi';
 import mongoose from 'mongoose';
 import corsHeaders from 'hapi-cors-headers';
 import ProductsRoutes from './routes/products';
-import ClientsRoutes from './routes/clients';
+import ClientsRoutes from './clients/routes';
 import ProfessionalsRoutes from './routes/professionals';
 import PurchasesRoutes from './routes/purchases';
 import SalesRoutes from './routes/sales';

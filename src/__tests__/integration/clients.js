@@ -1,7 +1,7 @@
 import 'isomorphic-fetch'; /* global fetch */
 import jwt from 'jwt-simple';
 import { jwtSecret } from '../../auth';
-import Client from '../../models/Client';
+import Client from '../../clients/model';
 import User from '../../models/User';
 import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
