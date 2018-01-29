@@ -1,94 +1,66 @@
 import 'isomorphic-fetch'; /* global fetch */
+import jwt from 'jwt-simple';
+import { jwtSecret } from '../../auth';
 import Product from '../../models/Products';
-import ClientModel from '../../models/Clients';
-import ProfessionalModel from '../../models/Professionals';
+import Client from '../../clients/model';
+import User from '../../models/User';
+import Professional from '../../models/Professionals';
 import SalesController from '../../controllers/Sales';
-import SalesModel from '../../models/Sales';
+import Sale from '../../models/Sales';
 import PurchasesController from '../../controllers/Purchases';
-import Stock from '../../controllers/Stock';
-import StockModel from '../../models/Stock';
+import StockController from '../../controllers/Stock';
+import Stock from '../../models/Stock';
 import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
 
-const stock = new Stock();
-
 const PRODUCTS_URL = 'http://localhost:5001/products';
 let server;
+let user;
+const headers = {
+  'Content-Type': 'application/json',
+};
+const errHandler = err => (err ? console.error(err) : false);
+
+async function cleanUP(cb = (() => {})) {
+  await Professional.deleteMany({}, errHandler);
+  await Stock.deleteMany({}, errHandler);
+  await Client.deleteMany({}, errHandler);
+  await Product.deleteMany({}, errHandler);
+  await Sale.deleteMany({}, errHandler);
+  await User.deleteMany({}, errHandler);
+
+  return cb();
+}
 
 describe('Products Route', () => {
-  beforeEach(async () => {
+  beforeEach(async (done) => {
     server = await configureServer()
-      .then((server) => {
-        server.start();
-        return server;
+      .then((sv) => {
+        sv.start();
+        return sv;
       });
+
+    await cleanUP();
+
+    user = new User({
+      email: 'user@mail.com',
+      password: 'validpass',
+    });
+
+    await user.save(errHandler);
+
+    headers.authorization = jwt.encode({ id: user._id }, jwtSecret);
+
+    done();
   });
 
-  beforeEach(async () => {
-    await ProfessionalModel.deleteMany({}, (err) => {
-      if (err) {
-        throw 'Could not ProfessionalModel.deleteMany on DB';
-      }
-    });
-
-    await StockModel.deleteMany({}, (err) => {
-      if (err) {
-        throw 'Could not StockModel.deleteMany on DB';
-      }
-    });
-
-    await ClientModel.deleteMany({}, (err) => {
-      if (err) {
-        throw 'Could not ProfessionalModel.deleteMany on DB';
-      }
-    });
-
-    await Product.deleteMany({}, (err) => {
-      if (err) {
-        throw 'Could not Product.deleteMany on DB';
-      }
-    });
-  });
-
-  afterEach((done) => {
-    server.stop().then(() => done());
-  });
-
-  beforeEach(async () => {
-    await ProfessionalModel.deleteMany({}, (err) => {
-      if (err) {
-        throw 'Could not ProfessionalModel.deleteMany on DB';
-      }
-    });
-
-    await StockModel.deleteMany({}, (err) => {
-      if (err) {
-        throw 'Could not StockModel.deleteMany on DB';
-      }
-    });
-
-    await SalesModel.deleteMany({}, (err) => {
-      if (err) {
-        throw 'Could not SalesModel.deleteMany on DB';
-      }
-    });
-
-    await ClientModel.deleteMany({}, (err) => {
-      if (err) {
-        throw 'Could not ProfessionalModel.deleteMany on DB';
-      }
-    });
-
-    await Product.deleteMany({}, (err) => {
-      if (err) {
-        throw 'Could not Product.deleteMany on DB';
-      }
-    });
+  afterEach(async (done) => {
+    server.stop().then(() => cleanUP(done));
   });
 
   describe('GET Route', () => {
     it('receives an empty array when no products', async () => {
-      const answer = await fetch(PRODUCTS_URL)
+      const answer = await fetch(PRODUCTS_URL, { headers })
         .then(res => res.json());
 
       expect(answer).toEqual({
@@ -128,13 +100,9 @@ describe('Products Route', () => {
         },
       ];
 
-      await Product.collection.insert(productsList, (err) => {
-        if (err) {
-          console.log(err);
-        }
-      });
+      await Product.byTenant(user._id).insertMany(productsList, errHandler);
 
-      const answer = await fetch(PRODUCTS_URL)
+      const answer = await fetch(PRODUCTS_URL, { headers })
         .then(res => res.json());
 
       expect(answer.code).toEqual(200);
@@ -147,14 +115,14 @@ describe('Products Route', () => {
     });
 
     it('sends a a list of products with valid stock when entries exist', async () => {
-      const ox = new Product({ name: 'OX', measure_unit: 'ml' });
-      ox.save();
+      let ox = { name: 'OX', measure_unit: 'ml' };
+      ox = await Product.byTenant(user._id).create(ox);
 
-      const client1 = new ClientModel({ name: 'Mary', phone: '999' });
-      client1.save();
+      let client1 = { name: 'Mary', phone: '999' };
+      client1 = await Client.byTenant(user._id).create(client1);
 
-      const professional1 = new ProfessionalModel({ name: 'Carl' });
-      professional1.save();
+      let professional1 = { name: 'Carl' };
+      professional1 = await Professional.byTenant(user._id).create(professional1);
 
       const purchase = {
         products: [
@@ -164,7 +132,7 @@ describe('Products Route', () => {
         date: Date.now(),
       };
 
-      const purchasesController = new PurchasesController();
+      const purchasesController = new PurchasesController(user._id);
       const { purchase: savedPurchase } = await purchasesController.create(purchase);
 
       const sale = {
@@ -182,12 +150,10 @@ describe('Products Route', () => {
           },
         ],
       };
-      const saleController = new SalesController();
+      const saleController = new SalesController(user._id);
       const { sale: savedSale } = await saleController.create(sale);
-      const stockController = new Stock();
-      const stockEntries = await stockController.getAll();
 
-      const answer = await fetch(PRODUCTS_URL)
+      const answer = await fetch(PRODUCTS_URL, { headers })
         .then(res => res.json());
 
       expect(answer.code).toEqual(200);
@@ -222,7 +188,7 @@ describe('Products Route', () => {
 
   describe('POST Route', () => {
     it('Can post a product', async () => {
-      const beforeList = await Product.find((err, products) => products);
+      const beforeList = await Product.byTenant(user._id).find((err, products) => products);
       expect(beforeList.length).toBe(0);
 
       const productExample = {
@@ -230,17 +196,18 @@ describe('Products Route', () => {
         measure_unit: 'unit',
       };
 
-      const res = await fetch(PRODUCTS_URL, {
+      const response = await fetch(PRODUCTS_URL, {
         method: 'POST',
         body: JSON.stringify(productExample),
+        headers,
       }).then(res => res.json());
 
-      const afterList = await Product.find((err, products) => products);
+      const afterList = await Product.byTenant(user._id).find((err, products) => products);
       expect(afterList.length).toBe(1);
       expect(afterList[0].name).toEqual(productExample.name);
 
-      expect(res.code).toEqual(200);
-      expect(res.body.name).toEqual(productExample.name);
+      expect(response.code).toEqual(200);
+      expect(response.body.name).toEqual(productExample.name);
     });
 
     it('Can\'t post a product with the same name of a previous product', async () => {
@@ -252,14 +219,16 @@ describe('Products Route', () => {
         measure_unit: 'unit',
       };
 
-      const res1 = await fetch(PRODUCTS_URL, {
+      await fetch(PRODUCTS_URL, {
         method: 'POST',
         body: JSON.stringify(productExample),
+        headers,
       }).then(res => res.json());
 
       const res2 = await fetch(PRODUCTS_URL, {
         method: 'POST',
         body: JSON.stringify(productExample),
+        headers,
       }).then(res => res.json());
 
 
