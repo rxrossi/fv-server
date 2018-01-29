@@ -1,10 +1,17 @@
 import 'isomorphic-fetch'; /* global fetch */
+import jwt from 'jwt-simple';
+import { jwtSecret } from '../../auth';
 import Client from '../../models/Clients';
+import Users from '../../models/Users';
 import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
 
 const CLIENTS_URL = 'http://localhost:5001/clients';
 let server;
+let user;
+const headers = {
+  'Content-Type': 'application/json',
+};
 
 const errHandler = err => (err ? console.error(err) : false);
 
@@ -17,6 +24,16 @@ describe('Clients Route', () => {
       });
 
     await Client.deleteMany({}, errHandler);
+    await Users.deleteMany({}, errHandler);
+
+    user = new Users({
+      email: 'user@mail.com',
+      password: 'validpass',
+    });
+
+    await user.save(errHandler);
+
+    headers.authorization = jwt.encode({ id: user._id }, jwtSecret);
   });
 
   afterEach((done) => {
@@ -25,7 +42,7 @@ describe('Clients Route', () => {
 
   describe('GET Route', () => {
     it('receives an empty array when no clients', async () => {
-      const answer = await fetch(CLIENTS_URL)
+      const answer = await fetch(CLIENTS_URL, { headers })
         .then(res => res.json());
 
       expect(answer).toEqual({
@@ -40,9 +57,11 @@ describe('Clients Route', () => {
         { name: 'Mary', phone: '999 777 6666' },
       ];
 
-      await Client.collection.insert(clientsList, errHandler);
+      await Client
+        .byTenant(user._id)
+        .insertMany(clientsList, errHandler);
 
-      const answer = await fetch(CLIENTS_URL)
+      const answer = await fetch(CLIENTS_URL, { headers })
         .then(res => res.json());
 
       expect(answer.code).toEqual(200);
@@ -64,6 +83,7 @@ describe('Clients Route', () => {
       const res = await fetch(CLIENTS_URL, {
         method: 'POST',
         body: JSON.stringify(john),
+        headers,
       }).then(resp => resp.json());
 
       const afterList = await Client.find((err, clients) => clients);
@@ -86,11 +106,13 @@ describe('Clients Route', () => {
       await fetch(CLIENTS_URL, {
         method: 'POST',
         body: JSON.stringify(john),
+        headers,
       }).then(res => res.json());
 
       const res2 = await fetch(CLIENTS_URL, {
         method: 'POST',
         body: JSON.stringify(john),
+        headers,
       }).then(res => res.json());
 
 
@@ -112,8 +134,9 @@ describe('Clients Route', () => {
     it('updates a client', async () => {
       // Prepare
       // Insert client
-      const client = new Client({ name: 'Mary', phone: '999 777 6666' });
-      await client.save();
+      // const client = { name: 'Mary', phone: '999 777 6666', tenantId: user._id };
+      let client = { name: 'Mary', phone: '999 777 6666' };
+      client = await Client.byTenant(user._id).create(client);
 
       // Act
       const clientUpdated = {
@@ -125,10 +148,11 @@ describe('Clients Route', () => {
       await fetch(CLIENTS_URL, {
         method: 'PUT',
         body: JSON.stringify(clientUpdated),
+        headers,
       }).then(res => res.json());
 
       // Assert
-      const updatedClientFromServer = await Client.findById(client._id);
+      const updatedClientFromServer = await Client.byTenant(user._id).findById(client._id);
       expect(updatedClientFromServer.name).toBe('Mary2');
     });
   });
@@ -137,12 +161,13 @@ describe('Clients Route', () => {
     it('deletes a client', async () => {
       // Prepare
       // Insert client
-      const client = new Client({ name: 'Mary', phone: '999 777 6666' });
-      await client.save();
+      let client = { name: 'Mary', phone: '999 777 6666' };
+      client = await Client.byTenant(user._id).create(client);
       // Act
       const resp = await fetch(CLIENTS_URL, {
         method: 'DELETE',
         body: JSON.stringify(client._id),
+        headers,
       }).then(res => res.json());
 
       // Assert

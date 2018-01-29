@@ -14,9 +14,10 @@ export default async () => {
   const server = new Hapi.Server();
 
   const port = process.env.PORT || 5001;
+  const host = process.env.PORT ? '0.0.0.0' : 'localhost';
 
   await server.connection({
-    host: '0.0.0.0',
+    host,
     port,
   });
 
