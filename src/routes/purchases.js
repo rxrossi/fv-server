@@ -8,7 +8,7 @@ export default (server) => {
       const controller = new Controller(req.auth.credentials.id);
       const purchases = await controller.getAll();
       return res({
-        code: 200,
+        statusCode: 200,
         body: purchases,
       });
     },
@@ -22,12 +22,12 @@ export default (server) => {
       const { errors } = await controller.delete(req.payload);
       if (errors) {
         return res({
-          code: 422,
+          statusCode: 422,
           errors,
         });
       }
       return res({
-        code: 204,
+        statusCode: 204,
       });
     },
   });
@@ -40,12 +40,12 @@ export default (server) => {
       const { purchase, errors } = await controller.update(req.payload);
       if (errors) {
         return res({
-          code: 422,
+          statusCode: 422,
           errors,
         });
       }
       return res({
-        code: 200,
+        statusCode: 200,
         body: purchase,
       });
     },
@@ -59,13 +59,13 @@ export default (server) => {
       const { purchase, errors } = await controller.create(req.payload);
       if (errors) {
         return res({
-          code: 422, // 409 is conflict
+          statusCode: 422, // 409 is conflict
           errors,
         });
       }
 
       return res({
-        code: 200,
+        statusCode: 200,
         body: purchase,
       });
     },

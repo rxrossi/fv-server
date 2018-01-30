@@ -1,13 +1,20 @@
 import 'isomorphic-fetch'; /* global fetch */
+import jwt from 'jwt-simple';
+import { jwtSecret } from '../../auth';
 import PurchasesModel from '../../models/Purchases';
-import ProductModel from '../../models/Products';
+import ProductModel from '../../products/model';
+import User from '../../models/User';
 import StockModel from '../../models/Stock';
 import PurchasesController from '../../controllers/Purchases';
 import configureServer from '../../configureServer';
-import { NOT_UNIQUE, BLANK, INVALID, NOT_POSITIVE } from '../../errors';
+import { BLANK, NOT_POSITIVE } from '../../errors';
 
 const PURCHASES_URL = 'http://localhost:5001/purchases';
 let server;
+let user;
+const headers = {
+  'Content-Type': 'application/json',
+};
 
 const genericErrorHandler = (err) => {
   if (err) {
@@ -26,6 +33,17 @@ describe('Purchases Route', () => {
         return sv;
       });
 
+    await User.deleteMany({}, genericErrorHandler);
+
+    user = new User({
+      email: 'user@mail.com',
+      password: 'validpass',
+    });
+
+    await user.save(genericErrorHandler);
+
+    headers.authorization = jwt.encode({ id: user._id }, jwtSecret);
+
     await PurchasesModel.deleteMany({}, genericErrorHandler);
     await StockModel.deleteMany({}, genericErrorHandler);
     await ProductModel.deleteMany({}, genericErrorHandler);
@@ -43,11 +61,11 @@ describe('Purchases Route', () => {
 
   describe('GET Route', () => {
     it('receives an empty array when no purchases', async () => {
-      const answer = await fetch(PURCHASES_URL)
+      const answer = await fetch(PURCHASES_URL, { headers })
         .then(res => res.json());
 
       expect(answer).toEqual({
-        code: 200,
+        statusCode: 200,
         body: [],
       });
     });
@@ -63,11 +81,11 @@ describe('Purchases Route', () => {
         date: Date.now(),
       };
 
-      const purchasesController = new PurchasesController();
+      const purchasesController = new PurchasesController(user._id);
       await purchasesController.create(postBody);
 
       // Act
-      const answer = await fetch(PURCHASES_URL)
+      const answer = await fetch(PURCHASES_URL, { headers })
         .then(res => res.json());
 
       // Assert
@@ -92,10 +110,10 @@ describe('Purchases Route', () => {
       const res = await fetch(PURCHASES_URL, {
         method: 'POST',
         body: JSON.stringify(postBody),
+        headers,
       }).then(resp => resp.json());
 
-      // console.log(res.body);
-      expect(res.code).toEqual(200);
+      expect(res.statusCode).toEqual(200);
       expect(res.body.seller).toEqual('Company one');
       expect(res.body.price).toEqual(130);
       expect(typeof res.body.stockEntries[0].id).toEqual('string');
@@ -132,9 +150,10 @@ describe('Purchases Route', () => {
       const res = await fetch(PURCHASES_URL, {
         method: 'POST',
         body: JSON.stringify(postBody),
+        headers,
       }).then(resp => resp.json());
 
-      expect(res.code).toEqual(422);
+      expect(res.statusCode).toEqual(422);
       expect(res.errors).toEqual(expectedErrors);
     });
   });
