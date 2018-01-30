@@ -1,13 +1,9 @@
 import mongoose from 'mongoose';
-import ProductsController from './Products';
-import ProductModel from '../models/Products';
+import ProductsController from './controller';
+import ProductModel from './model';
 import StockModel from '../models/Stock';
 
-const errLogger = (err) => {
-  if (err) {
-    console.error(err);
-  }
-};
+const errLogger = err => err && console.error(err);
 
 describe('ProductsController', () => {
   let sut;
@@ -43,11 +39,7 @@ describe('ProductsController', () => {
           price_per_unit: 10,
         });
 
-        entryOne.save((error) => {
-          if (error) {
-            console.error('entry', error);
-          }
-        });
+        entryOne.save(errLogger);
       });
 
       sut = new ProductsController();
@@ -102,11 +94,7 @@ describe('ProductsController', () => {
           price_per_unit: 10,
         });
 
-        entryOne.save((error) => {
-          if (error) {
-            console.error('entry', error);
-          }
-        });
+        entryOne.save(errLogger);
       });
 
       const updatedOx = {
@@ -140,11 +128,7 @@ describe('ProductsController', () => {
           price_per_unit: 10,
         });
 
-        entryOne.save((error) => {
-          if (error) {
-            console.error('entry', error);
-          }
-        });
+        entryOne.save(errLogger);
       });
 
       sut = new ProductsController();

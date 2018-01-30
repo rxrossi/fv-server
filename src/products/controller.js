@@ -1,4 +1,4 @@
-import Products, { addPrice, addQuantity, addAvgPriceFiveLast } from '../models/Products';
+import Products, { addPrice, addQuantity, addAvgPriceFiveLast } from './model';
 import { NOT_UNIQUE, BLANK, INVALID } from '../errors';
 // import { addSourceOrDestination } from '../controllers/Stock';
 

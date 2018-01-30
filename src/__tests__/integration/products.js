@@ -1,14 +1,13 @@
 import 'isomorphic-fetch'; /* global fetch */
 import jwt from 'jwt-simple';
 import { jwtSecret } from '../../auth';
-import Product from '../../models/Products';
+import Product from '../../products/model';
 import Client from '../../clients/model';
 import User from '../../models/User';
 import Professional from '../../models/Professionals';
 import SalesController from '../../controllers/Sales';
 import Sale from '../../models/Sales';
 import PurchasesController from '../../controllers/Purchases';
-import StockController from '../../controllers/Stock';
 import Stock from '../../models/Stock';
 import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
