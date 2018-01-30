@@ -1,5 +1,5 @@
 import Stock from '../models/Stock';
-import Products from '../controllers/Products';
+import Products from '../products/controller';
 
 export const addSourceOrDestination = (entry) => {
   const sourceOrDestination = {};
