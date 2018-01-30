@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import PurchasesController from './Purchases';
-import ProductModel from '../models/Products';
+import ProductModel from '../products/model';
 import StockModel from '../models/Stock';
-import ProductsController from './Products';
+import ProductsController from '../products/controller';
 import PurchasesModel from '../models/Purchases';
 
 const productsController = new ProductsController();
