@@ -10,11 +10,11 @@ export default (server) => {
       await Professional.find()
         .collation({ locale: 'en', strength: 2 }).sort({ name: 1 })
         .then(professionals => res({
-          code: 200,
+          statusCode: 200,
           body: professionals,
         }))
         .catch(() => res({
-          code: 500,
+          statusCode: 500,
           error: 'Could not fetch professionals',
         }));
     },
@@ -46,13 +46,13 @@ export default (server) => {
         professional.name = name;
         await professional.save();
         return res({
-          code: 200,
+          statusCode: 200,
           body: professional,
         });
       }
 
       return res({
-        code: 422, // 409 is conflict
+        statusCode: 422, // 409 is conflict
         errors,
       });
     },
@@ -65,10 +65,10 @@ export default (server) => {
       const Professional = NonTenant.byTenant(req.auth.credentials.id);
       await Professional.findByIdAndRemove(req.payload)
         .then(() => res({
-          code: 204,
+          statusCode: 204,
         }))
         .catch(() => res({
-          code: 500,
+          statusCode: 500,
         }));
     },
   });
@@ -98,13 +98,13 @@ export default (server) => {
         const professional = new Professional(req.payload);
         professional.save();
         return res({
-          code: 200,
+          statusCode: 200,
           body: professional,
         });
       }
 
       return res({
-        code: 422, // 409 is conflict
+        statusCode: 422,
         errors,
       });
     },

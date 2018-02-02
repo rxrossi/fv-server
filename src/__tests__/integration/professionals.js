@@ -2,9 +2,14 @@ import 'isomorphic-fetch'; /* global fetch */
 import Professional from '../../models/Professionals';
 import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
+import cleanAndCreateUserAndHeader from '../helpers/cleanUsersCreateUserAndHeader';
 
 const PROFESSIONALS_URL = 'http://localhost:5001/professionals';
 let server;
+let user;
+let headers;
+
+const errHandler = err => (err ? console.error(err) : false);
 
 describe('Professionals Route', () => {
   beforeEach(async () => {
@@ -14,12 +19,8 @@ describe('Professionals Route', () => {
         return sv;
       });
 
-    await Professional.deleteMany({}, (err) => {
-      if (err) {
-        throw new Error('Could not Professional.deleteMany on DB');
-      }
-      return true;
-    });
+    await Professional.deleteMany({}, errHandler);
+    ({ user, headers } = await cleanAndCreateUserAndHeader());
   });
 
   afterEach((done) => {
@@ -27,12 +28,12 @@ describe('Professionals Route', () => {
   });
 
   describe('GET Route', () => {
-    it.only('receives an empty array when no professionals', async () => {
-      const answer = await fetch(PROFESSIONALS_URL)
+    it('receives an empty array when no professionals', async () => {
+      const answer = await fetch(PROFESSIONALS_URL, { headers })
         .then(res => res.json());
 
       expect(answer).toEqual({
-        code: 200,
+        statusCode: 200,
         body: [],
       });
     });
@@ -43,16 +44,12 @@ describe('Professionals Route', () => {
         { name: 'Carl' },
       ];
 
-      await Professional.collection.insert(professionalsList, (err) => {
-        if (err) {
-          throw new Error(err);
-        }
-      });
+      await Professional.byTenant(user._id).insertMany(professionalsList, errHandler);
 
-      const answer = await fetch(PROFESSIONALS_URL)
+      const answer = await fetch(PROFESSIONALS_URL, { headers })
         .then(res => res.json());
 
-      expect(answer.code).toEqual(200);
+      expect(answer.statusCode).toEqual(200);
       expect(answer.body.length).toEqual(2);
       expect(typeof answer.body[0].id).toEqual('string');
       // Response is ordered by name
@@ -72,18 +69,24 @@ describe('Professionals Route', () => {
       const res = await fetch(PROFESSIONALS_URL, {
         method: 'POST',
         body: JSON.stringify(professionalExample),
+        headers,
       }).then(resp => resp.json());
 
-      const afterList = await Professional.find((err, professionals) => professionals);
+      const afterList = await Professional
+        .byTenant(user._id)
+        .find((err, professionals) => professionals);
+
       expect(afterList.length).toBe(1);
       expect(afterList[0].name).toEqual(professionalExample.name);
 
-      expect(res.code).toEqual(200);
+      expect(res.statusCode).toEqual(200);
       expect(res.body.name).toEqual(professionalExample.name);
     });
 
     it('Can\'t post a professional with the same name of a previous professional', async () => {
-      const beforeList = await Professional.find((err, professionals) => professionals);
+      const beforeList = await Professional
+        .byTenant(user._id)
+        .find((err, professionals) => professionals);
       expect(beforeList.length).toBe(0);
 
       const professionalExample = {
@@ -93,11 +96,13 @@ describe('Professionals Route', () => {
       await fetch(PROFESSIONALS_URL, {
         method: 'POST',
         body: JSON.stringify(professionalExample),
+        headers,
       }).then(res => res.json());
 
       const res2 = await fetch(PROFESSIONALS_URL, {
         method: 'POST',
         body: JSON.stringify(professionalExample),
+        headers,
       }).then(res => res.json());
 
 
@@ -108,11 +113,11 @@ describe('Professionals Route', () => {
 
       // Standard response
       // {
-      //  code,
+      //  statusCode,
       //  body,
       // }
       expect(res2).toEqual({
-        code: 422,
+        statusCode: 422,
         errors: {
           name: NOT_UNIQUE,
         },
@@ -124,7 +129,7 @@ describe('Professionals Route', () => {
     it('updates a professional', async () => {
       // Prepare
       // Insert professional
-      const professional = new Professional({ name: 'Mary' });
+      const professional = new Professional({ name: 'Mary', tenantId: user._id });
       await professional.save();
 
       // Act
@@ -136,10 +141,13 @@ describe('Professionals Route', () => {
       await fetch(PROFESSIONALS_URL, {
         method: 'PUT',
         body: JSON.stringify(clientUpdated),
+        headers,
       }).then(res => res.json());
 
       // Assert
-      const updatedProfessionalFromServer = await Professional.findById(professional._id);
+      const updatedProfessionalFromServer = await Professional
+        .byTenant(user._id)
+        .findById(professional._id);
       expect(updatedProfessionalFromServer.name).toBe('Mary2');
     });
   });
@@ -148,17 +156,19 @@ describe('Professionals Route', () => {
     it('deletes a professional', async () => {
       // Prepare
       // Insert professional
-      const professional = new Professional({ name: 'Mary' });
+      const professional = new Professional({ name: 'Mary', tenantId: user._id });
       await professional.save();
+
       // Act
       const resp = await fetch(PROFESSIONALS_URL, {
         method: 'DELETE',
         body: JSON.stringify(professional._id),
+        headers,
       }).then(res => res.json());
 
       // Assert
       const deletedProfessional = await Professional.findById(professional._id);
-      expect(resp.code).toBe(204);
+      expect(resp.statusCode).toBe(204);
       expect(deletedProfessional).toEqual(null);
     });
   });
