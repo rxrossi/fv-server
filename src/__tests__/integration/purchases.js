@@ -1,20 +1,16 @@
 import 'isomorphic-fetch'; /* global fetch */
-import jwt from 'jwt-simple';
-import { jwtSecret } from '../../auth';
 import PurchasesModel from '../../models/Purchases';
 import ProductModel from '../../products/model';
-import User from '../../models/User';
 import StockModel from '../../models/Stock';
 import PurchasesController from '../../controllers/Purchases';
 import configureServer from '../../configureServer';
 import { BLANK, NOT_POSITIVE } from '../../errors';
+import cleanAndCreateUserAndHeader from '../helpers/cleanUsersCreateUserAndHeader';
 
 const PURCHASES_URL = 'http://localhost:5001/purchases';
 let server;
 let user;
-const headers = {
-  'Content-Type': 'application/json',
-};
+let headers;
 
 const genericErrorHandler = (err) => {
   if (err) {
@@ -33,16 +29,7 @@ describe('Purchases Route', () => {
         return sv;
       });
 
-    await User.deleteMany({}, genericErrorHandler);
-
-    user = new User({
-      email: 'user@mail.com',
-      password: 'validpass',
-    });
-
-    await user.save(genericErrorHandler);
-
-    headers.authorization = jwt.encode({ id: user._id }, jwtSecret);
+    ({ user, headers } = await cleanAndCreateUserAndHeader());
 
     await PurchasesModel.deleteMany({}, genericErrorHandler);
     await StockModel.deleteMany({}, genericErrorHandler);

@@ -1,6 +1,4 @@
 import 'isomorphic-fetch'; /* global fetch */
-import jwt from 'jwt-simple';
-import { jwtSecret } from '../../auth';
 import Product from '../../products/model';
 import Client from '../../clients/model';
 import User from '../../models/User';
@@ -11,13 +9,13 @@ import PurchasesController from '../../controllers/Purchases';
 import Stock from '../../models/Stock';
 import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
+import cleanAndCreateUserAndHeader from '../helpers/cleanUsersCreateUserAndHeader';
 
 const PRODUCTS_URL = 'http://localhost:5001/products';
 let server;
 let user;
-const headers = {
-  'Content-Type': 'application/json',
-};
+let headers;
+
 const errHandler = err => (err ? console.error(err) : false);
 
 async function cleanUP(cb = (() => {})) {
@@ -41,14 +39,7 @@ describe('Products Route', () => {
 
     await cleanUP();
 
-    user = new User({
-      email: 'user@mail.com',
-      password: 'validpass',
-    });
-
-    await user.save(errHandler);
-
-    headers.authorization = jwt.encode({ id: user._id }, jwtSecret);
+    ({ user, headers } = await cleanAndCreateUserAndHeader());
 
     done();
   });

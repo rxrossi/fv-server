@@ -27,7 +27,7 @@ describe('Professionals Route', () => {
   });
 
   describe('GET Route', () => {
-    it('receives an empty array when no professionals', async () => {
+    it.only('receives an empty array when no professionals', async () => {
       const answer = await fetch(PROFESSIONALS_URL)
         .then(res => res.json());
 

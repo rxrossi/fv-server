@@ -1,17 +1,13 @@
 import 'isomorphic-fetch'; /* global fetch */
-import jwt from 'jwt-simple';
-import { jwtSecret } from '../../auth';
 import Client from '../../clients/model';
-import User from '../../models/User';
 import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
+import cleanAndCreateUserAndHeader from '../helpers/cleanUsersCreateUserAndHeader';
 
 const CLIENTS_URL = 'http://localhost:5001/clients';
 let server;
 let user;
-const headers = {
-  'Content-Type': 'application/json',
-};
+let headers;
 
 const errHandler = err => (err ? console.error(err) : false);
 
@@ -24,16 +20,7 @@ describe('Clients Route', () => {
       });
 
     await Client.deleteMany({}, errHandler);
-    await User.deleteMany({}, errHandler);
-
-    user = new User({
-      email: 'user@mail.com',
-      password: 'validpass',
-    });
-
-    await user.save(errHandler);
-
-    headers.authorization = jwt.encode({ id: user._id }, jwtSecret);
+    ({ user, headers } = await cleanAndCreateUserAndHeader());
   });
 
   afterEach((done) => {
