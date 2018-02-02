@@ -204,6 +204,7 @@ class Sales {
       products = [],
     } = postBody;
 
+
     const errors = hasErrors(postBody);
     if (errors) {
       return { errors };
@@ -226,9 +227,7 @@ class Sales {
       payment: paymentFullInfo,
     });
 
-
     const { id: sale_id } = await sale.save();
-
 
     if (products.length > 0) {
       const promises = products.map(item => Promise.resolve(this.Stock.create({
@@ -240,6 +239,7 @@ class Sales {
 
       await Promise.all(promises);
     }
+
 
     return {
       sale: await this.getOne(sale_id),

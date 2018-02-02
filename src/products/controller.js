@@ -71,7 +71,6 @@ class ProductsController {
         },
       })
       .then(product => product.toObject())
-    // .then(product => addSourceOrDestination(product))
       .then(product => addPrice(product))
       .then(product => addQuantity(product))
       .then(product => addAvgPriceFiveLast(product));

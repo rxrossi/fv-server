@@ -3,14 +3,15 @@ import Joi from 'joi';
 import PurchasesModel from '../../models/Purchases';
 import SalesModel from '../../models/Sales';
 import StockModel from '../../models/Stock';
-import ProductModel from '../../models/Products';
+import Product from '../../products/model';
 import PurchasesController from '../../controllers/Purchases';
 import SalesController from '../../controllers/Sales';
-import ClientModel from '../../models/Clients';
+import Client from '../../clients/model';
 import ProfessionalModel from '../../models/Professionals';
 import configureServer from '../../configureServer';
 import { BLANK, NOT_POSITIVE } from '../../errors';
 import getJoiValidationErrors from '../../joiAssertRequirePresence';
+import cleanAndCreateUserAndHeader from '../helpers/cleanUsersCreateUserAndHeader';
 
 const SALES_URL = 'http://localhost:5001/sales';
 
@@ -22,8 +23,8 @@ const genericErrorHandler = (err) => {
 
 const cleanUpDB = () =>
   PurchasesModel.deleteMany({}, genericErrorHandler)
-    .then(() => ProductModel.deleteMany({}, genericErrorHandler))
-    .then(() => ClientModel.deleteMany({}, genericErrorHandler))
+    .then(() => Product.deleteMany({}, genericErrorHandler))
+    .then(() => Client.deleteMany({}, genericErrorHandler))
     .then(() => ProfessionalModel.deleteMany({}, genericErrorHandler))
     .then(() => StockModel.deleteMany({}, genericErrorHandler))
     .then(() => SalesModel.deleteMany({}, genericErrorHandler));
@@ -36,6 +37,8 @@ describe('Sales routes', () => {
   let cape;
   let client1;
   let professional1;
+  let user;
+  let headers;
 
   beforeEach(async () => { // booting server
     server = await configureServer()
@@ -46,11 +49,14 @@ describe('Sales routes', () => {
 
     await cleanUpDB();
 
-    client1 = await new ClientModel({ name: 'Mary', phone: '999' }).save();
+    ({ user, headers } = await cleanAndCreateUserAndHeader());
+
+    client1 = await new Client({ name: 'Mary', phone: '999' }).save();
     professional1 = await new ProfessionalModel({ name: 'Carl' }).save();
-    ox = await new ProductModel({ name: 'OX', measure_unit: 'ml' }).save();
-    shampoo = await new ProductModel({ name: 'shampoo', measure_unit: 'ml' }).save();
-    cape = await new ProductModel({ name: 'cape', measure_unit: 'unit' }).save();
+
+    ox = await new Product({ name: 'OX', measure_unit: 'ml', tenantId: user._id }).save();
+    shampoo = await new Product({ name: 'shampoo', measure_unit: 'ml', tenantId: user._id }).save();
+    cape = await new Product({ name: 'cape', measure_unit: 'unit', tenantId: user._id }).save();
 
     const purchaseBody = {
       products: [
@@ -62,7 +68,7 @@ describe('Sales routes', () => {
       date: Date.now(),
     };
 
-    const purchaseController = new PurchasesController();
+    const purchaseController = new PurchasesController(user._id);
     await purchaseController.create(purchaseBody);
   });
 
@@ -73,7 +79,7 @@ describe('Sales routes', () => {
 
   describe('GET route', () => {
     it('returns an empty list when there are no records', async () => {
-      const answer = await fetch(SALES_URL)
+      const answer = await fetch(SALES_URL, { headers })
         .then(res => res.json());
 
       expect(answer).toEqual({
@@ -103,10 +109,11 @@ describe('Sales routes', () => {
           },
         ],
       };
-      const salesController = new SalesController();
+      const salesController = new SalesController(user._id);
       await salesController.create(postBody);
+
       // Asserting
-      const getBody = await fetch(SALES_URL).then(res => res.json());
+      const getBody = await fetch(SALES_URL, { headers }).then(res => res.json());
 
       expect(getBody.body.length).toBe(1);
 
@@ -115,6 +122,7 @@ describe('Sales routes', () => {
       const joiGetBody = Joi.object().keys({
         _id: Joi.string(),
         id: Joi.string(),
+        tenantId: Joi.any(),
         name: 'service one',
         client: {
           ...client1.toObject(),
@@ -143,6 +151,7 @@ describe('Sales routes', () => {
       Joi.assert(firstSale, joiGetBody);
 
       const stockEntryOneSchema = Joi.object().keys({
+        tenantId: Joi.any(),
         _id: Joi.string(),
         id: Joi.string(),
         __v: Joi.number(),
@@ -181,6 +190,7 @@ describe('Sales routes', () => {
       const response = await fetch(SALES_URL, {
         method: 'POST',
         body: JSON.stringify(postBody),
+        headers,
       }).then(res => res.json());
 
 
@@ -212,11 +222,13 @@ describe('Sales routes', () => {
         stockEntries: Joi.array().length(2),
         profit: 300 - 45 - 20, // value_liquid - products
         __v: Joi.number(),
+        tenantId: Joi.any(),
       });
 
       expect(getJoiValidationErrors(joiGetBody, response.body)).toBe(null);
 
       const stockEntryOneSchema = Joi.object().keys({
+        tenantId: Joi.any(),
         _id: Joi.string(),
         id: Joi.string(),
         __v: Joi.number(),
@@ -243,6 +255,7 @@ describe('Sales routes', () => {
       const response = await fetch(SALES_URL, {
         method: 'POST',
         body: JSON.stringify(postBody),
+        headers,
       }).then(res => res.json());
 
       expect(response.code).toBe(200);
@@ -273,6 +286,7 @@ describe('Sales routes', () => {
         stockEntries: Joi.array().length(0),
         profit: 300, // value_liquid - products
         __v: Joi.number(),
+        tenantId: Joi.any(),
       });
       expect(getJoiValidationErrors(joiGetBody, response.body)).toBe(null);
     });
@@ -319,6 +333,7 @@ describe('Sales routes', () => {
       const response = await fetch(SALES_URL, {
         method: 'POST',
         body: JSON.stringify(postBody),
+        headers,
       }).then(res => res.json());
 
       expect(response.errors).toEqual(expectedErrors);
@@ -354,6 +369,7 @@ describe('Sales routes', () => {
       const response = await fetch(SALES_URL, {
         method: 'POST',
         body: JSON.stringify(postBody),
+        headers,
       }).then(res => res.json());
 
       saleId = response.body.id;
@@ -372,6 +388,7 @@ describe('Sales routes', () => {
       const response = await fetch(SALES_URL, {
         method: 'PUT',
         body: JSON.stringify(putBody),
+        headers,
       }).then(res => res.json());
 
       // Assert
@@ -385,6 +402,7 @@ describe('Sales routes', () => {
       const response = await fetch(SALES_URL, {
         method: 'DELETE',
         body: JSON.stringify(saleId),
+        headers,
       }).then(res => res.json());
 
       // Assert

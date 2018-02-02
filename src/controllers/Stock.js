@@ -45,7 +45,6 @@ export default class StockController {
       await this.Products.getOne(postBody.product).then(x => x.price_per_unit) :
       postBody.total_price / postBody.qty;
 
-
     return new this.Model({
       product: postBody.product,
       purchase: postBody.purchase,
