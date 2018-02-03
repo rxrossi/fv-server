@@ -7,7 +7,7 @@ export default (server) => {
     handler: async (req, res) => {
       const controller = new Controller(req.auth.credentials.id);
       res({
-        code: 200,
+        statusCode: 200,
         body: await controller.getAll(),
       });
     },
@@ -22,13 +22,13 @@ export default (server) => {
 
       if (errors) {
         return res({
-          code: 422, // 409 is conflict
+          statusCode: 422, // 409 is conflict
           errors,
         });
       }
 
       return res({
-        code: 200,
+        statusCode: 200,
         body: product,
       });
     },
@@ -43,13 +43,13 @@ export default (server) => {
 
       if (errors) {
         return res({
-          code: 422, // 409 is conflict
+          statusCode: 422, // 409 is conflict
           errors,
         });
       }
 
       return res({
-        code: 204,
+        statusCode: 204,
       });
     },
   });
@@ -63,13 +63,13 @@ export default (server) => {
 
       if (errors) {
         return res({
-          code: 422, // 409 is conflict
+          statusCode: 422, // 409 is conflict
           errors,
         });
       }
 
       return res({
-        code: 200,
+        statusCode: 200,
         body: product,
       });
     },

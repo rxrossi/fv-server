@@ -8,7 +8,7 @@ export default (server) => {
       const controller = new SalesController(req.auth.credentials.id);
       const sales = await controller.getAll();
       return res({
-        code: 200,
+        statusCode: 200,
         body: sales,
       });
     },
@@ -22,12 +22,12 @@ export default (server) => {
       const { errors } = await controller.delete(req.payload);
       if (errors) {
         return res({
-          code: 422,
+          statusCode: 422,
           errors,
         });
       }
       return res({
-        code: 204,
+        statusCode: 204,
       });
     },
   });
@@ -40,12 +40,12 @@ export default (server) => {
       const { sale, errors } = await controller.update(req.payload);
       if (errors) {
         return res({
-          code: 422,
+          statusCode: 422,
           errors,
         });
       }
       return res({
-        code: 200,
+        statusCode: 200,
         body: sale,
       });
     },
@@ -59,12 +59,12 @@ export default (server) => {
       const { sale, errors } = await controller.create(req.payload);
       if (errors) {
         return res({
-          code: 422,
+          statusCode: 422,
           errors,
         });
       }
       return res({
-        code: 200,
+        statusCode: 200,
         body: sale,
       });
     },

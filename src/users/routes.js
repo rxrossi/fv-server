@@ -41,13 +41,13 @@ export default (server) => {
         const user = new User(req.payload);
         user.save();
         return res({
-          code: 200,
+          statusCode: 200,
           body: user,
         });
       }
 
       return res({
-        code: 422,
+        statusCode: 422,
         errors,
       });
     },

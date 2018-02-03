@@ -10,11 +10,11 @@ export default (server) => {
       await Client.find()
         .collation({ locale: 'en', strength: 2 }).sort({ name: 1 })
         .then(clients => res({
-          code: 200,
+          statusCode: 200,
           body: clients,
         }))
         .catch(() => res({
-          code: 500,
+          statusCode: 500,
           error: 'Could not fetch clients',
         }));
     },
@@ -27,10 +27,10 @@ export default (server) => {
       const Client = NonTenant.byTenant(req.auth.credentials.id);
       await Client.findByIdAndRemove(req.payload)
         .then(() => res({
-          code: 204,
+          statusCode: 204,
         }))
         .catch(() => res({
-          code: 500,
+          statusCode: 500,
         }));
     },
   });
@@ -66,13 +66,13 @@ export default (server) => {
         client.phone = phone;
         await client.save();
         return res({
-          code: 200,
+          statusCode: 200,
           body: client,
         });
       }
 
       return res({
-        code: 422, // 409 is conflict
+        statusCode: 422, // 409 is conflict
         errors,
       });
     },
@@ -107,13 +107,13 @@ export default (server) => {
         const client = new Client(req.payload);
         client.save();
         return res({
-          code: 200,
+          statusCode: 200,
           body: client,
         });
       }
 
       return res({
-        code: 422, // 409 is conflict
+        statusCode: 422, // 409 is conflict
         errors,
       });
     },
