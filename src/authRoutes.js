@@ -1,5 +1,5 @@
 import jwt from 'jwt-simple';
-import User from './users/routes';
+import User from './users/models';
 import { jwtSecret } from './auth';
 
 export default (server) => {
@@ -14,14 +14,14 @@ export default (server) => {
           if (user && user.isPassCorrect(password, user.password)) {
             const payload = { id: user._id };
             return res({
-              code: 200,
+              statusCode: 200,
               body: jwt.encode(payload, jwtSecret),
             });
           }
-          return res({ code: 401 });
+          return res({ statusCode: 401 });
         })
         .catch(() => res({
-          code: 500,
+          statusCode: 500,
           error: 'Could not do this request for a token',
         }));
     },
