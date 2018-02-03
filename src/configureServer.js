@@ -3,11 +3,11 @@ import mongoose from 'mongoose';
 import corsHeaders from 'hapi-cors-headers';
 import ProductsRoutes from './products/routes';
 import ClientsRoutes from './clients/routes';
-import ProfessionalsRoutes from './routes/professionals';
-import PurchasesRoutes from './routes/purchases';
-import SalesRoutes from './routes/sales';
-import UsersRoutes from './routes/users';
-import AuthRoute from './routes/auth';
+import ProfessionalsRoutes from './professionals/routes';
+import PurchasesRoutes from './purchases/routes';
+import SalesRoutes from './sales/routes';
+import UsersRoutes from './users/routes';
+import AuthRoute from './authRoutes';
 import AuthCfg from './auth';
 
 export default async () => {

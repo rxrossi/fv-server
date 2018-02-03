@@ -1,7 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
 import mongoTenant from 'mongo-tenant';
-import '../models/Purchases';
-import '../models/Sales';
 
 const stockSchema = Schema({
   product: { type: Schema.Types.ObjectId, ref: 'Product' },

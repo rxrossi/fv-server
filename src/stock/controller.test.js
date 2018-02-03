@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
-import SalesController from '../controllers/Sales';
-import StockController from './Stock';
-import PurchasesController from '../controllers/Purchases';
-import ProductModel from '../models/Products';
-import StockModel from '../models/Stock';
-import ClientModel from '../models/Clients';
-import ProfessionalModel from '../models/Professionals';
+import SalesController from '../sales/controller';
+import StockController from './controller';
+import PurchasesController from '../purchases/controller';
+import ProductModel from '../products/model';
+import StockModel from '../stock/model';
+import ClientModel from '../clients/model';
+import ProfessionalModel from '../professionals/model';
 
 const errHandler = cb => (err) => {
   if (err) {

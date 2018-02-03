@@ -1,15 +1,15 @@
 import 'isomorphic-fetch'; /* global fetch */
 import Product from '../../products/model';
 import Client from '../../clients/model';
-import User from '../../models/User';
-import Professional from '../../models/Professionals';
-import SalesController from '../../controllers/Sales';
-import Sale from '../../models/Sales';
-import PurchasesController from '../../controllers/Purchases';
-import Stock from '../../models/Stock';
+import User from '../../users/models';
+import Professional from '../../professionals/model';
+import SalesController from '../../sales/controller';
+import Sale from '../../sales/model';
+import PurchasesController from '../../purchases/controller';
+import Stock from '../../stock/model';
 import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
-import cleanAndCreateUserAndHeader from '../helpers/cleanUsersCreateUserAndHeader';
+import cleanAndCreateUserAndHeader from '../../testHelpers/cleanUsersCreateUserAndHeader';
 
 const PRODUCTS_URL = 'http://localhost:5001/products';
 let server;

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import ProductsController from './controller';
 import ProductModel from './model';
-import StockModel from '../models/Stock';
+import StockModel from '../stock/model';
 
 const errLogger = err => err && console.error(err);
 

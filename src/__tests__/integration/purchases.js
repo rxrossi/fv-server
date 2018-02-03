@@ -1,11 +1,11 @@
 import 'isomorphic-fetch'; /* global fetch */
-import PurchasesModel from '../../models/Purchases';
+import PurchasesModel from '../../purchases/model';
 import ProductModel from '../../products/model';
-import StockModel from '../../models/Stock';
-import PurchasesController from '../../controllers/Purchases';
+import StockModel from '../../stock/model';
+import PurchasesController from '../../purchases/controller';
 import configureServer from '../../configureServer';
 import { BLANK, NOT_POSITIVE } from '../../errors';
-import cleanAndCreateUserAndHeader from '../helpers/cleanUsersCreateUserAndHeader';
+import cleanAndCreateUserAndHeader from '../../testHelpers/cleanUsersCreateUserAndHeader';
 
 const PURCHASES_URL = 'http://localhost:5001/purchases';
 let server;

@@ -1,6 +1,6 @@
-import SalesModel from '../models/Sales';
-import StockModel from '../models/Stock';
-import StockController from './Stock';
+import SalesModel from './model';
+import StockModel from '../stock/model';
+import StockController from '../stock/controller';
 import { BLANK, NOT_POSITIVE } from '../errors';
 
 const pad2 = x => (x > 9 ? x.toString() : `0${x}`);

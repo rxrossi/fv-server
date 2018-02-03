@@ -1,17 +1,17 @@
 import 'isomorphic-fetch'; /* global fetch */
 import Joi from 'joi';
-import PurchasesModel from '../../models/Purchases';
-import SalesModel from '../../models/Sales';
-import StockModel from '../../models/Stock';
+import PurchasesModel from '../../purchases/model';
+import SalesModel from '../../sales/model';
+import StockModel from '../../stock/model';
 import Product from '../../products/model';
-import PurchasesController from '../../controllers/Purchases';
-import SalesController from '../../controllers/Sales';
+import PurchasesController from '../../purchases/controller';
+import SalesController from '../../sales/controller';
 import Client from '../../clients/model';
-import ProfessionalModel from '../../models/Professionals';
+import ProfessionalModel from '../../professionals/model';
 import configureServer from '../../configureServer';
 import { BLANK, NOT_POSITIVE } from '../../errors';
 import getJoiValidationErrors from '../../joiAssertRequirePresence';
-import cleanAndCreateUserAndHeader from '../helpers/cleanUsersCreateUserAndHeader';
+import cleanAndCreateUserAndHeader from '../../testHelpers/cleanUsersCreateUserAndHeader';
 
 const SALES_URL = 'http://localhost:5001/sales';
 

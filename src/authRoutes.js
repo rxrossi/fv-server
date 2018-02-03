@@ -1,6 +1,6 @@
 import jwt from 'jwt-simple';
-import User from '../models/User';
-import { jwtSecret } from '../auth';
+import User from './users/routes';
+import { jwtSecret } from './auth';
 
 export default (server) => {
   server.route({

@@ -1,4 +1,4 @@
-import SalesController from '../controllers/Sales';
+import SalesController from './controller';
 
 export default (server) => {
   server.route({

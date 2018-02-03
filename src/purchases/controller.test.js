@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
-import PurchasesController from './Purchases';
+import PurchasesController from './controller';
 import ProductModel from '../products/model';
-import StockModel from '../models/Stock';
+import StockModel from '../stock/model';
 import ProductsController from '../products/controller';
-import PurchasesModel from '../models/Purchases';
+import PurchasesModel from './model';
 
 const productsController = new ProductsController();
 const sut = new PurchasesController();

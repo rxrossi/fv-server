@@ -1,6 +1,6 @@
 import jwt from 'jwt-simple';
-import { jwtSecret } from '../../auth';
-import User from '../../models/User';
+import { jwtSecret } from '../auth';
+import User from '../users/models';
 
 const errHandler = err => (err ? console.error(err) : false);
 

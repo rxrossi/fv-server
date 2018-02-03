@@ -1,4 +1,4 @@
-import User from '../models/User';
+import User from './models';
 import { NOT_UNIQUE, BLANK, UNMATCHED_PW } from '../errors';
 
 export default (server) => {

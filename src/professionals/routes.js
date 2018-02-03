@@ -1,4 +1,4 @@
-import NonTenant from '../models/Professionals';
+import NonTenant from './model';
 import { NOT_UNIQUE, BLANK } from '../errors';
 
 export default (server) => {

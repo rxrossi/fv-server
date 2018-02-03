@@ -1,8 +1,8 @@
 import 'isomorphic-fetch'; /* global fetch */
-import Professional from '../../models/Professionals';
+import Professional from '../../professionals/model';
 import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
-import cleanAndCreateUserAndHeader from '../helpers/cleanUsersCreateUserAndHeader';
+import cleanAndCreateUserAndHeader from '../../testHelpers/cleanUsersCreateUserAndHeader';
 
 const PROFESSIONALS_URL = 'http://localhost:5001/professionals';
 let server;

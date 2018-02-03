@@ -1,6 +1,6 @@
-import Purchase from '../models/Purchases';
-import StockController from './Stock';
-import StockModelNonTenant from '../models/Stock';
+import Purchase from './model';
+import StockController from '../stock/controller';
+import StockModelNonTenant from '../stock/model';
 import { BLANK, NOT_POSITIVE } from '../errors';
 
 

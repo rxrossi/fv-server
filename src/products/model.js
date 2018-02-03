@@ -1,6 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
 import mongoose_delete from 'mongoose-delete';
 import mongoTenant from 'mongo-tenant';
+import '../sales/model';
+import '../purchases/model';
 
 export function addPrice(product) {
   if (!product.stock.length) {

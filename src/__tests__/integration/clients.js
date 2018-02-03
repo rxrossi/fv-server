@@ -2,7 +2,7 @@ import 'isomorphic-fetch'; /* global fetch */
 import Client from '../../clients/model';
 import configureServer from '../../configureServer';
 import { NOT_UNIQUE } from '../../errors';
-import cleanAndCreateUserAndHeader from '../helpers/cleanUsersCreateUserAndHeader';
+import cleanAndCreateUserAndHeader from '../../testHelpers/cleanUsersCreateUserAndHeader';
 
 const CLIENTS_URL = 'http://localhost:5001/clients';
 let server;

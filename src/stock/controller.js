@@ -1,4 +1,4 @@
-import Stock from '../models/Stock';
+import Stock from './model';
 import Products from '../products/controller';
 
 export const addSourceOrDestination = (entry) => {

@@ -1,5 +1,5 @@
 import hapiAuthJwt from 'hapi-auth-jwt2';
-import User from './models/User';
+import User from './users/models';
 
 export const jwtSecret = process.env.JWT_SECRET || 'a-Random_string_anything';
 
