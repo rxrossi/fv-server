@@ -55,47 +55,47 @@ On success returns a json with the created user
 ##### Required
 ```json
 {
-  email: string,
-  password: string,
-  confirmPassword: string,
+  "email": "string",
+  "password": "string",
+  "confirmPassword": "string",
 }
 ```
 
 ##### Success Response
-Code: 201
-Content: 
+**Cod**e: 201.
+**Content**: 
 ```json
 {
-  statusCode: 201,
-  body: {
-    email: string,
-    password: string,
-    confirmPassword: string,
+  "statusCode": 201,
+  "body": {
+    "email": "string",
+    "password": "string",
+    "confirmPassword": "string",
   }
 }
 ```
 
 ##### Error Response
-Code: 422
-Content:
+**Cod**e: 422.
+**Conten**t:
 ```json
 {
-  statusCode: 422,
-  errors: {
-    email: NOT_UNIQUE,
-    password: UNMATCHED_PW,
-    confirmPassword: UNMATCHED_PW,
+  "statusCode": 422,
+  "errors": {
+    "email": "NOT_UNIQUE",
+    "password": "UNMATCHED_PW",
+    "confirmPassword": "UNMATCHED_PW",
   }
 }
 ```
 OR
 ```json
 {
-  statusCode: 422,
-  errors: {
-    email: BLANK,
-    password: BLANK,
-    confirmPassword: BLANK,
+  "statusCode": 422,
+  "errors": {
+    "email": "BLANK",
+    "password": "BLANK",
+    "confirmPassword": "BLANK",
   }
 }
 ```
