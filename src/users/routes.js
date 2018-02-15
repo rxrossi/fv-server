@@ -42,7 +42,10 @@ export default (server) => {
         user.save();
         return res({
           statusCode: 200,
-          body: user,
+          body: {
+            _id: user.id,
+            email: user.email,
+          },
         });
       }
 

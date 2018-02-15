@@ -69,9 +69,8 @@ On success returns a json with the created user
 {
   "statusCode": 201,
   "body": {
+    "_id": "string",
     "email": "string",
-    "password": "string",
-    "confirmPassword": "string",
   }
 }
 ```
