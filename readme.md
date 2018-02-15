@@ -46,13 +46,13 @@ npm run test:integration
 #### Create User
 On success returns a json with the created user
 
-##### URL
+#### URL
 /users
 
-##### Method
+#### Method
 `POST`
 
-##### Required
+#### Required
 ```json
 {
   "email": "string",
@@ -61,8 +61,9 @@ On success returns a json with the created user
 }
 ```
 
-##### Success Response
+#### Success Response
 **Code**: 201
+
 **Content**: 
 ```json
 {
@@ -75,7 +76,7 @@ On success returns a json with the created user
 }
 ```
 
-##### Error Response
+#### Error Response
 **Code**: 422
 
 **Conten**t:
