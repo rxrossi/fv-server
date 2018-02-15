@@ -62,7 +62,7 @@ On success returns a json with the created user
 ```
 
 ##### Success Response
-**Cod**e: 201.
+**Code**: 201
 **Content**: 
 ```json
 {
@@ -76,7 +76,8 @@ On success returns a json with the created user
 ```
 
 ##### Error Response
-**Cod**e: 422.
+**Code**: 422
+
 **Conten**t:
 ```json
 {
