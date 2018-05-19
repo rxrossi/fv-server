@@ -41,6 +41,11 @@ npm run test:integration
 
 ## Endpoints
 
+### NOTE
+Most of the routes are not documented, this project, while fully working, is not receiving updates anymore.
+
+For understanding the routes, check src/__tests__/integration, each route has its own testing file and is easy to understand
+
 ### Users
 
 #### Create User
